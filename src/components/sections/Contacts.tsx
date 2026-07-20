@@ -91,15 +91,24 @@ export function Contacts() {
           </div>
 
           {/* Карта */}
-          <div className="h-96 bg-brand-100 rounded-xl overflow-hidden shadow-md">
-            <iframe
-              title="Карта ресторана Кинкали"
-              width="100%"
-              height="100%"
-              frameBorder="0"
-              src="https://yandex.ru/maps/?text=Пермь%2C+ул.+Белинского%2C+6Б&sll=56.234,58.014&z=15&l=map"
-              allowFullScreen
-            />
+          <div className="h-96 bg-brand-100 rounded-xl overflow-hidden shadow-md flex flex-col items-center justify-center p-8">
+            <div className="text-center">
+              <Icon name="инфо" size="lg" alt="Адрес" className="text-brand-900 mx-auto mb-4" />
+              <p className="text-brand-900 font-semibold text-lg mb-2">
+                г. Пермь, ул. Белинского, 6Б
+              </p>
+              <p className="text-brand-700 mb-6">
+                Нажмите, чтобы открыть на карте
+              </p>
+              <a
+                href="https://yandex.ru/maps/?text=Пермь%2C+ул.+Белинского%2C+6Б&z=15"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-6 py-2 bg-brand-900 text-white rounded-lg hover:bg-brand-800 transition-colors font-semibold"
+              >
+                Открыть на Яндекс Картах →
+              </a>
+            </div>
           </div>
         </div>
       </div>
