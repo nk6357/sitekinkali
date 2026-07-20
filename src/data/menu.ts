@@ -23,9 +23,19 @@ export const MENU_CATEGORIES: MenuCategory[] = [
 /**
  * База блюд ресторана.
  * Автоматически генерируется из структуры Menu12/
- * Генерировано: 2026-07-20T18:00:23.419Z
+ * Генерировано: 2026-07-20T18:07:27.104Z
  */
 export const menuItems: MenuItem[] = [
+  {
+    id: '67-1784570847104',
+    name: "хлеб йоу",
+    description: "ароматный неупавший хлебушек",
+    weight: '""',
+    price: 499,
+    category: "Алкоголь",
+    image: "Menu12/Алкоголь/67/image.png",
+    isAvailable: true,
+  },
 ];
 
 /** Файлы меню для скачивания (PDF и DOCX из брендбука) */

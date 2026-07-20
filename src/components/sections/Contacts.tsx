@@ -21,7 +21,7 @@ export function Contacts() {
                 Адрес
               </h3>
               <p className="text-brand-700 text-lg">
-                г. Пермь, ул. Ленина, д. 42
+                г. Пермь, ул. Белинского, 6Б
               </p>
               <p className="text-brand-500 text-sm mt-2">
                 Центр города, легко найти по картам
@@ -97,7 +97,7 @@ export function Contacts() {
               width="100%"
               height="100%"
               frameBorder="0"
-              src="https://yandex.ru/map-widget/v1/?um=constructor%3A1234567890&source=constructor"
+              src="https://yandex.ru/maps/?text=Пермь%2C+ул.+Белинского%2C+6Б&sll=56.234,58.014&z=15&l=map"
               allowFullScreen
             />
           </div>
