@@ -21,10 +21,11 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    font-size: 18px;
   }
 
   body {
-    @apply bg-brand-50 font-body text-brand-900 antialiased;
+    @apply bg-brand-50 font-body text-brand-900 antialiased text-lg;
   }
 
   h1,
@@ -34,5 +35,9 @@
   h5,
   h6 {
     @apply font-heading;
+  }
+
+  p {
+    @apply text-lg leading-relaxed;
   }
 }

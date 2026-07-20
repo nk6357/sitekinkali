@@ -23,7 +23,7 @@ export interface IconProps {
 
 /** Категории меню — строгий порядок отображения */
 export type MenuCategory =
-  | 'Холодные закуски/стартеры'
+  | 'Холодные закуски'
   | 'Горячие закуски'
   | 'Салаты'
   | 'Супы'
@@ -98,10 +98,15 @@ export interface InputProps {
   id: string;
   label: string;
   type?: 'text' | 'tel' | 'datetime-local' | 'textarea' | 'checkbox';
-  value: string | boolean;
-  onChange: (value: string | boolean) => void;
+  value?: string | boolean;
+  onChange?: (value: string | boolean) => void;
   placeholder?: string;
   required?: boolean;
   error?: string;
   rows?: number;
+  className?: string;
+  maxLength?: number;
+  pattern?: string;
+  disabled?: boolean;
+  checked?: boolean;
 }
