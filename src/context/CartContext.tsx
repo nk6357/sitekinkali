@@ -28,6 +28,7 @@ export function CartProvider({ children }: CartProviderProps) {
   });
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isCheckout, setIsCheckout] = useState(false);
 
   // Сохранять корзину в localStorage при любых изменениях
   useEffect(() => {
@@ -89,6 +90,17 @@ export function CartProvider({ children }: CartProviderProps) {
     setIsOpen(false);
   }, []);
 
+  // Открыть страницу оформления заказа
+  const openCheckout = useCallback(() => {
+    setIsCheckout(true);
+    setIsOpen(false);
+  }, []);
+
+  // Закрыть страницу оформления заказа
+  const closeCheckout = useCallback(() => {
+    setIsCheckout(false);
+  }, []);
+
   // Подсчитать общую сумму
   const totalPrice = items.reduce((sum: number, cartItem: any) => {
     return sum + cartItem.menuItem.price * cartItem.quantity;
@@ -102,12 +114,15 @@ export function CartProvider({ children }: CartProviderProps) {
   const value: CartContextValue = {
     items,
     isOpen,
+    isCheckout,
     addItem,
     removeItem,
     updateQuantity,
     clearCart,
     openCart,
     closeCart,
+    openCheckout,
+    closeCheckout,
     totalPrice,
     totalItems,
   };

@@ -9,7 +9,7 @@ import { Icon } from '../icons/Icon';
  * Модальное окно корзины с списком товаров, управлением количеством и переходом к оформлению
  */
 export function Cart() {
-  const { items, isOpen, closeCart, totalPrice, totalItems } = useCart();
+  const { items, isOpen, closeCart, openCheckout, totalPrice, totalItems } = useCart();
   const [isMounted, setIsMounted] = useState(isOpen);
   const [visible, setVisible] = useState(isOpen);
 
@@ -46,12 +46,8 @@ export function Cart() {
   if (!isMounted) return null;
 
   const handleCheckout = () => {
-    // Прокрутить к секции заказа и закрыть модальное окно
-    closeCart();
-    const orderSection = document.getElementById('order-section');
-    setTimeout(() => {
-      orderSection?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+    // Открыть страницу оформления заказа
+    openCheckout();
   };
 
   return (

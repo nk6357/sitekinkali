@@ -17,12 +17,32 @@ export function formatPhone(phone: string): string {
   // Удалить все нецифровые символы
   const digits = phone.replace(/\D/g, '');
   
-  // Если начинается с 7, удалить её (будет добавлена с +)
-  let normalizedDigits = digits.startsWith('7') ? digits.slice(1) : digits;
+  // Привести к стандартной форме: 11 цифр, начинающихся с 7
+  let normalizedDigits: string;
   
-  // Если осталось менее 10 цифр, добавить нули в начало
-  if (normalizedDigits.length < 10) {
-    normalizedDigits = normalizedDigits.padStart(10, '0');
+  if (digits.length === 0) {
+    return '';
+  }
+  
+  // Если уже начинается с 7 и ровно 11 цифр
+  if (digits.startsWith('7') && digits.length === 11) {
+    normalizedDigits = digits.slice(1); // Берем 10 цифр без начальной 7
+  }
+  // Если начинается с 8 (вариант записи внутри России)
+  else if (digits.startsWith('8') && digits.length === 11) {
+    normalizedDigits = digits.slice(1); // Берем 10 цифр без начальной 8
+  }
+  // Если ровно 10 цифр
+  else if (digits.length === 10) {
+    normalizedDigits = digits;
+  }
+  // Если 11 цифр и не начинается с 7 или 8
+  else if (digits.length === 11) {
+    normalizedDigits = digits.slice(1);
+  }
+  // Во всех остальных случаях паддируем или обрезаем до 10 цифр
+  else {
+    normalizedDigits = digits.padStart(10, '0').slice(-10);
   }
   
   // Форматировать: +7 (XXX) XXX-XX-XX

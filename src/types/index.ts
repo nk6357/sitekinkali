@@ -71,12 +71,15 @@ export interface OrderFormData {
 export interface CartContextValue {
   items: CartItem[];
   isOpen: boolean;
+  isCheckout: boolean;
   addItem: (item: MenuItem) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
   openCart: () => void;
   closeCart: () => void;
+  openCheckout: () => void;
+  closeCheckout: () => void;
   totalPrice: number;
   totalItems: number;
 }
