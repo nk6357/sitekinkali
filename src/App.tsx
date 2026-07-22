@@ -1,7 +1,6 @@
 import { CartProvider } from './context/CartContext';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
-import { Hero } from './components/sections/Hero';
 import { About } from './components/sections/About';
 import { Menu } from './components/sections/Menu';
 import { OrderSection } from './components/sections/OrderSection';
@@ -12,9 +11,8 @@ function AppContent() {
   return (
     <>
       <Header />
-      <Hero />
-      <About />
       <Menu />
+      <About />
       <OrderSection />
       <Contacts />
       <Footer />

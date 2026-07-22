@@ -20,10 +20,13 @@ export function Menu() {
     <section id="menu-section" className="bg-brand-50 py-12">
       <div className="mx-auto max-w-7xl px-4">
         {/* Заголовок */}
-        <h2 className="font-heading text-4xl md:text-5xl font-semibold text-brand-900 mb-12 text-center">
-          Наше меню
-        </h2>
-
+      <div className="mb-12 text-center">
+        <img
+          src="/brandbook/кинкали%20надпись%20+%20лого.jpg"
+          alt="Кинкали"
+          className="mx-auto h-auto max-w-[220px] sm:max-w-[280px]"
+        />
+      </div>
         {/* Фильтр категорий */}
         <CategoryFilter
           categories={availableCategories}

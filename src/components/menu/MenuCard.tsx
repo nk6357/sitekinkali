@@ -1,7 +1,7 @@
+import { useEffect, useState } from 'react';
 import { useCart } from '../../hooks/useCart';
 import { Button } from '../ui/Button';
 import type { MenuItem } from '../../types';
-import type { SyntheticEvent } from 'react';
 import { formatPrice } from '../../utils/formatters';
 
 interface MenuCardProps {
@@ -32,39 +32,40 @@ export function MenuCard({ item }: MenuCardProps) {
   const placeholderImage = '/brandbook/аватар.png';
   const pngImage = `/id21/${item.id}.png`;
   const jpgImage = `/id21/${item.id}.jpg`;
+  const imageSources = [
+    item.image || '',
+    pngImage,
+    jpgImage,
+    placeholderImage,
+  ].filter(Boolean);
 
-  const handleImageError = (
-    event: SyntheticEvent<HTMLImageElement, Event>,
-  ) => {
-    const img = event.currentTarget;
-    if (img.src.includes(`${pngImage}`)) {
-      img.onerror = null;
-      img.src = jpgImage;
-      return;
-    }
+  const [imageSrc, setImageSrc] = useState<string>(imageSources[0]);
 
-    if (img.src.includes(`${jpgImage}`)) {
-      img.onerror = null;
-      img.src = placeholderImage;
-      return;
-    }
+  useEffect(() => {
+    setImageSrc(imageSources[0]);
+  }, [item.image, item.id]);
 
-    img.onerror = null;
+  const handleImageError = () => {
+    setImageSrc((currentSrc) => {
+      const currentIndex = imageSources.indexOf(currentSrc);
+      const nextIndex = Math.min(currentIndex + 1, imageSources.length - 1);
+      return imageSources[nextIndex];
+    });
   };
 
   return (
     <div
       data-menu-id={item.id}
-      className="group flex h-full flex-col overflow-hidden rounded-xl border-2 border-brand-200 
-        bg-white hover:shadow-lg hover:scale-102 transition-all duration-300"
+      className="group flex min-h-0 h-full flex-col overflow-hidden rounded-xl border border-brand-200 bg-white hover:shadow-lg hover:scale-102 transition-all duration-300"
     >
       <span className="sr-only">ID блюда {item.id}</span>
 
       {/* Фото блюда */}
-      <div className="relative h-48 bg-brand-100 overflow-hidden">
+      <div className="relative h-36 bg-brand-100 overflow-hidden">
         <img
-          src={pngImage}
+          src={imageSrc}
           alt={item.name}
+          loading="lazy"
           onError={handleImageError}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
         />
@@ -91,14 +92,14 @@ export function MenuCard({ item }: MenuCardProps) {
           </p>
         )}
 
-        <div className="mt-auto border-t border-brand-100 pt-4 flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-3">
-            <span className="font-heading text-2xl font-semibold text-brand-900">
+        <div className="mt-auto border-t border-brand-100 pt-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <span className="font-heading text-xl font-semibold text-brand-900">
               {formatPrice(item.price)}
             </span>
 
             {quantity > 0 ? (
-              <div className="inline-flex h-10 min-w-[140px] items-center justify-between rounded-lg bg-brand-900 px-3 text-brand-50 font-heading font-semibold text-sm">
+              <div className="inline-flex h-10 w-full max-w-[150px] items-center justify-between rounded-lg bg-brand-900 px-3 text-brand-50 font-heading font-semibold text-sm sm:w-auto">
                 <button
                   type="button"
                   onClick={handleDecrement}
@@ -124,7 +125,7 @@ export function MenuCard({ item }: MenuCardProps) {
                 variant="primary"
                 onClick={handleAddToCart}
                 disabled={!item.isAvailable}
-                className="h-10 min-w-[140px] px-3 text-sm"
+                className="h-10 w-full max-w-[140px] px-3 text-sm"
               >
                 {item.isAvailable ? 'В корзину' : 'Нет в наличии'}
               </Button>

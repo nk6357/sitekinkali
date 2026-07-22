@@ -23,7 +23,7 @@ export const MENU_CATEGORIES: MenuCategory[] = [
 /**
  * База блюд ресторана.
  * Автоматически генерируется из структуры Menu12/
- * Генерировано: 2026-07-22T00:34:16.814Z
+ * Генерировано: 2026-07-22T01:06:17.759Z
  */
 export const menuItems: MenuItem[] = [
   {
