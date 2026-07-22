@@ -72,11 +72,15 @@ function loadMenuItem(categoryPath, itemName, category) {
 
   const imageFile = findImageFile(itemPath);
 
+  const id = /^[0-9]+$/.test(itemName)
+    ? itemName
+    : `${itemName.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`.slice(0, 50);
+
   return {
-    id: `${itemName.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`.slice(0, 50),
+    id,
     name: `"${name.replace(/"/g, '\\"')}"`,
     description: `"${description.replace(/"/g, '\\"')}"`,
-    weight: `"${imageFile ? '' : ''}"`,
+    weight: '',
     price,
     category: `"${category}"`,
     image: imageFile ? `"Menu12/${category}/${itemName}/${imageFile}"` : `""`,

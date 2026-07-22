@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useCart } from '../../hooks/useCart';
 import { CartItemComponent } from './CartItem';
 import { Button } from '../ui/Button';
@@ -10,10 +10,29 @@ import { Icon } from '../icons/Icon';
  */
 export function Cart() {
   const { items, isOpen, closeCart, totalPrice, totalItems } = useCart();
+  const [isMounted, setIsMounted] = useState(isOpen);
+  const [visible, setVisible] = useState(isOpen);
 
-  // Блокировать скролл на весь экран, когда модальное окно открыто
   useEffect(() => {
+    let timeoutId: number | undefined;
+
     if (isOpen) {
+      setIsMounted(true);
+      requestAnimationFrame(() => setVisible(true));
+    } else if (isMounted) {
+      setVisible(false);
+      timeoutId = window.setTimeout(() => setIsMounted(false), 300);
+    }
+
+    return () => {
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, [isOpen, isMounted]);
+
+  useEffect(() => {
+    if (isMounted) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -22,9 +41,9 @@ export function Cart() {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen]);
+  }, [isMounted]);
 
-  if (!isOpen) return null;
+  if (!isMounted) return null;
 
   const handleCheckout = () => {
     // Прокрутить к секции заказа и закрыть модальное окно
@@ -39,14 +58,20 @@ export function Cart() {
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 z-50 bg-brand-900/60 backdrop-blur-sm transition-opacity"
+        className={`fixed inset-0 z-50 bg-brand-900/60 backdrop-blur-sm transition-opacity duration-300 ${
+          visible ? 'opacity-100' : 'opacity-0'
+        }`}
         onClick={closeCart}
       />
 
       {/* Модальное окно */}
       <div
-        className="fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-full max-w-md max-h-[90vh] 
-          bg-brand-50 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+        className={`fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-[92vw] max-w-[1000px] md:w-[75vw] max-h-[85vh] 
+          bg-brand-50 rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 ease-out ${
+            visible
+              ? 'opacity-100 scale-100'
+              : 'opacity-0 scale-95'
+          }`}
       >
         {/* Заголовок */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-brand-200">
