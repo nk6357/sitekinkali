@@ -1,4 +1,5 @@
 import { Icon } from '../icons/Icon';
+import { LEGAL_DETAILS } from '../../data/legal';
 
 /**
  * Подвал сайта с контактами, ссылками на соцсети, копирайтом
@@ -23,13 +24,13 @@ export function Footer() {
             <h3 className="font-heading font-semibold text-lg">Контакты</h3>
             <div className="flex flex-col gap-2 text-sm">
               <a
-                href="tel:+79999999999"
+                href={LEGAL_DETAILS.phoneHref}
                 className="hover:text-brand-300 transition-colors"
               >
-                +7 (999) 999-99-99
+                {LEGAL_DETAILS.phone}
               </a>
-              <p>г. Пермь, ул. Ленина, д. 42</p>
-              <p className="text-brand-400">Пн-Вс 11:00 - 23:00</p>
+              <p>г. Пермь, ул. Белинского, 6Б</p>
+              <p className="text-brand-400">{LEGAL_DETAILS.workingHours}</p>
             </div>
           </div>
 
@@ -72,9 +73,21 @@ export function Footer() {
         {/* Нижняя часть */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-brand-400">
           <p>
-            © {currentYear} ООО «Кинкали». Все права защищены.
+            © {currentYear} {LEGAL_DETAILS.shortName}. Все права защищены.
           </p>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-3 md:justify-end">
+            <a
+              href="/legal-details"
+              className="hover:text-brand-50 transition-colors"
+            >
+              Реквизиты
+            </a>
+            <a
+              href="/offer"
+              className="hover:text-brand-50 transition-colors"
+            >
+              Оферта
+            </a>
             <a
               href="/privacy"
               className="hover:text-brand-50 transition-colors"
@@ -86,6 +99,18 @@ export function Footer() {
               className="hover:text-brand-50 transition-colors"
             >
               Пользовательское соглашение
+            </a>
+            <a
+              href="/personal-data-consent"
+              className="hover:text-brand-50 transition-colors"
+            >
+              Согласие на обработку данных
+            </a>
+            <a
+              href="/cookies"
+              className="hover:text-brand-50 transition-colors"
+            >
+              Cookies
             </a>
           </div>
         </div>

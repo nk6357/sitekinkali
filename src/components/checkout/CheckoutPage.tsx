@@ -26,6 +26,7 @@ export function CheckoutPage({ onClose }: CheckoutPageProps) {
   const { items, totalPrice, totalItems, clearCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [orderId, setOrderId] = useState('');
 
   // Скролл в верх при открытии страницы
   useEffect(() => {
@@ -124,12 +125,15 @@ export function CheckoutPage({ onClose }: CheckoutPageProps) {
         body: JSON.stringify(orderData),
       });
 
+      const result = await response.json().catch(() => null);
+
       if (!response.ok) {
         throw new Error('Ошибка при отправке заказа');
       }
 
       // Показать сообщение об успехе
       setSuccessMessage('Спасибо! Ваш заказ принят. Проверьте email для подтверждения.');
+      setOrderId(result?.orderId || '');
 
       // Очистить корзину
       clearCart();
@@ -154,6 +158,11 @@ export function CheckoutPage({ onClose }: CheckoutPageProps) {
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md text-center space-y-6">
           <div className="text-6xl">✓</div>
           <h2 className="font-heading text-2xl font-bold text-brand-900">{successMessage}</h2>
+          {orderId && (
+            <p className="text-brand-700">
+              Номер заказа: <strong className="font-heading text-brand-900">{orderId}</strong>
+            </p>
+          )}
           <Button variant="primary" onClick={onClose} className="w-full py-3">
             Вернуться на сайт
           </Button>
@@ -292,7 +301,15 @@ export function CheckoutPage({ onClose }: CheckoutPageProps) {
                 className="mt-1 w-5 h-5 accent-brand-900 cursor-pointer"
               />
               <span className="text-sm text-brand-700 leading-snug">
-                Я согласен с обработкой персональных данных и условиями оказания услуг
+                Я даю отдельное{' '}
+                <a
+                  href="/personal-data-consent"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-brand-900 underline decoration-brand-400 underline-offset-2"
+                >
+                  согласие на обработку персональных данных
+                </a>
               </span>
             </label>
             {errors.consent && (
@@ -327,6 +344,28 @@ export function CheckoutPage({ onClose }: CheckoutPageProps) {
               Отмена
             </Button>
           </div>
+
+          <p className="text-xs leading-5 text-brand-600">
+            Нажимая «Подтвердить заказ», вы принимаете условия{' '}
+            <a
+              href="/offer"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-brand-900 underline decoration-brand-400 underline-offset-2"
+            >
+              публичной оферты
+            </a>{' '}
+            и подтверждаете, что ознакомились с{' '}
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-brand-900 underline decoration-brand-400 underline-offset-2"
+            >
+              политикой обработки персональных данных
+            </a>
+            .
+          </p>
         </form>
       </div>
     </div>

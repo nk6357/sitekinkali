@@ -2,6 +2,32 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/legal-details",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/offer",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/personal-data-consent",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/cookies",
+      "destination": "/index.html"
+    }
+  ],
   "functions": {
     "api/orders/send-email.js": {
       "maxDuration": 30
