@@ -10,7 +10,8 @@
     "generate": "node scripts/generateMenu.js",
     "build": "npm run generate && tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:server": "node --test tests/order-service.test.js"
   },
   "dependencies": {
     "cors": "^2.8.6",

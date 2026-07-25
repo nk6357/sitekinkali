@@ -1,159 +1,72 @@
 import express from 'express';
-import cors from 'cors';
-import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import {
+  createSecurityHeaders,
+  getPublicError,
+  processOrderRequest,
+} from './server/order-service.js';
 
 dotenv.config();
 
 const app = express();
+const PORT = Number.parseInt(process.env.PORT || '3000', 10);
 
-// Middleware
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
+if (process.env.TRUST_PROXY === 'true') {
+  app.set('trust proxy', 1);
+}
 
-// Mailer configuration
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'localhost',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: process.env.SMTP_SECURE === 'true',
-  auth: process.env.SMTP_USER
-    ? {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD,
-      }
-    : undefined,
+app.disable('x-powered-by');
+app.use((request, response, next) => {
+  for (const [name, value] of Object.entries(createSecurityHeaders())) {
+    response.setHeader(name, value);
+  }
+  next();
 });
+app.use(express.json({ limit: '64kb', strict: true }));
 
-// API Routes
-app.post('/api/orders/send-email', async (req, res) => {
+app.all('/api/orders/send-email', async (request, response) => {
   try {
-    const { customer, items, totalPrice, pickupLocation, paymentMethod, comment, timestamp } = req.body;
+    const result = await processOrderRequest({
+      method: request.method,
+      headers: request.headers,
+      body: request.body,
+      ipAddress: request.ip || request.socket.remoteAddress || 'unknown',
+    });
 
-    if (!customer || !items || !customer.email) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    if (result.origin) {
+      response.setHeader('Access-Control-Allow-Origin', result.origin);
+      response.setHeader('Vary', 'Origin');
     }
-
-    // Generate HTML for items list
-    const itemsHtml = items
-      .map(
-        (item) =>
-          `<tr>
-        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb;">
-          <strong>${item.name}</strong>
-        </td>
-        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: center;">
-          x${item.quantity}
-        </td>
-        <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; text-align: right;">
-          <strong>${item.total.toLocaleString('ru-RU')} ₽</strong>
-        </td>
-      </tr>`
-      )
-      .join('');
-
-    // Email template for admin
-    const adminEmailHtml = `
-      <h2>Новый заказ поступил!</h2>
-      <h3>Информация о клиенте:</h3>
-      <p><strong>Имя:</strong> ${customer.name}</p>
-      <p><strong>Телефон:</strong> ${customer.phone}</p>
-      <p><strong>Email:</strong> ${customer.email}</p>
-      
-      <h3>Информация о заказе:</h3>
-      <p><strong>Место самовывоза:</strong> ${pickupLocation}</p>
-      <p><strong>Способ оплаты:</strong> ${paymentMethod}</p>
-      <p><strong>Комментарий:</strong> ${comment}</p>
-      
-      <h3>Заказанные блюда:</h3>
-      <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-          <tr style="background-color: #f3f4f6;">
-            <th style="padding: 8px; text-align: left; border-bottom: 2px solid #e5e7eb;">Блюдо</th>
-            <th style="padding: 8px; text-align: center; border-bottom: 2px solid #e5e7eb;">Кол-во</th>
-            <th style="padding: 8px; text-align: right; border-bottom: 2px solid #e5e7eb;">Сумма</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${itemsHtml}
-        </tbody>
-      </table>
-      
-      <h3 style="margin-top: 20px; text-align: right; font-size: 18px;">
-        <span>Итого: </span>
-        <span style="color: #1f2937;">${totalPrice.toLocaleString('ru-RU')} ₽</span>
-      </h3>
-      
-      <p style="color: #666; font-size: 12px; margin-top: 30px;">
-        Время получения: ${new Date(timestamp).toLocaleString('ru-RU')}
-      </p>
-    `;
-
-    // Email template for customer
-    const customerEmailHtml = `
-      <h2 style="color: #1f2937;">✓ Ваш заказ принят!</h2>
-      <p>Спасибо за заказ, <strong>${customer.name}</strong>!</p>
-      
-      <h3>Деталь вашего заказа:</h3>
-      <p><strong>Место самовывоза:</strong> ${pickupLocation}</p>
-      <p><strong>Способ оплаты:</strong> ${paymentMethod}</p>
-      <p><strong>Комментарий:</strong> ${comment}</p>
-      
-      <h3>Заказанные блюда:</h3>
-      <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-          <tr style="background-color: #f3f4f6;">
-            <th style="padding: 8px; text-align: left; border-bottom: 2px solid #e5e7eb;">Блюдо</th>
-            <th style="padding: 8px; text-align: center; border-bottom: 2px solid #e5e7eb;">Кол-во</th>
-            <th style="padding: 8px; text-align: right; border-bottom: 2px solid #e5e7eb;">Сумма</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${itemsHtml}
-        </tbody>
-      </table>
-      
-      <h3 style="margin-top: 20px; text-align: right; font-size: 18px;">
-        <span>Итого: </span>
-        <span style="color: #1f2937;">${totalPrice.toLocaleString('ru-RU')} ₽</span>
-      </h3>
-      
-      <p style="margin-top: 30px; line-height: 1.6;">
-        Мы свяжемся с вами в ближайшее время для подтверждения заказа.<br/>
-        Спасибо за выбор нашего ресторана!
-      </p>
-    `;
-
-    // Send email to admin
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM || process.env.SMTP_USER,
-      to: process.env.ADMIN_EMAIL,
-      subject: `Новый заказ от ${customer.name}`,
-      html: adminEmailHtml,
-      replyTo: customer.email,
-    });
-
-    // Send confirmation email to customer
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM || process.env.SMTP_USER,
-      to: customer.email,
-      subject: 'Ваш заказ принят',
-      html: customerEmailHtml,
-    });
-
-    res.json({ success: true, message: 'Order sent successfully' });
+    if (request.method === 'OPTIONS') {
+      response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+      response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      return response.status(204).end();
+    }
+    return response.status(result.status).json(result.body);
   } catch (error) {
-    console.error('Error sending email:', error);
-    res.status(500).json({ error: 'Failed to send email' });
+    const publicError = getPublicError(error);
+    for (const [name, value] of Object.entries(publicError.headers)) {
+      response.setHeader(name, value);
+    }
+    return response.status(publicError.status).json(publicError.body);
   }
 });
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
+app.get('/api/health', (_request, response) => {
+  response.json({ status: 'ok' });
 });
 
-// Start server
-const PORT = parseInt(process.env.PORT || '3000');
+app.use((error, _request, response, _next) => {
+  if (error?.type === 'entity.too.large') {
+    return response.status(413).json({ success: false, error: 'Заказ слишком большой' });
+  }
+  if (error instanceof SyntaxError) {
+    return response.status(400).json({ success: false, error: 'Некорректный JSON' });
+  }
+  console.error('Unhandled API error', { name: error?.name || 'UnknownError' });
+  return response.status(500).json({ success: false, error: 'Внутренняя ошибка сервера' });
+});
+
 app.listen(PORT, () => {
-  console.log(`📧 Email API server running on port ${PORT}`);
+  console.log(`Order API server is running on port ${PORT}`);
 });
