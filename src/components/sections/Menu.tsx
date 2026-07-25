@@ -22,7 +22,7 @@ export function Menu() {
         {/* Заголовок */}
       <div className="mb-12 text-center">
         <img
-          src="/brandbook/кинкали%20надпись%20+%20лого.jpg"
+          src="/brandbook/кинкали%20надпись%20%2B%20лого.jpg"
           alt="Кинкали"
           className="mx-auto h-auto max-w-[220px] sm:max-w-[280px]"
         />
