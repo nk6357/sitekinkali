@@ -1,5 +1,6 @@
 import { Button } from '../ui/Button';
 import { Icon } from '../icons/Icon';
+import heroLogo from '../../../brandbook/аватар.png';
 
 /**
  * Hero-блок: полноэкранный баннер с названием ресторана, слоганом и CTA-кнопками
@@ -37,13 +38,17 @@ export function Hero() {
 
       {/* Контент */}
       <div className="relative z-10 max-w-4xl mx-auto px-4 py-20 text-center">
-        {/* Логотип аватар */}
+        {/* Логотип подключён как часть сборки: Vite выдаёт ему стабильный путь на любом хостинге. */}
         <div className="mb-8 flex justify-center">
-          <Icon
-            name="аватар"
-            size="xl"
+          <img
+            src={heroLogo}
             alt="Логотип Кинкали"
-            className="text-brand-50"
+            width={48}
+            height={48}
+            className="h-12 w-12 object-contain"
+            loading="eager"
+            fetchPriority="high"
+            decoding="sync"
           />
         </div>
 
