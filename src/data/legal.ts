@@ -7,7 +7,7 @@ export const LEGAL_DETAILS = {
   legalAddress: '614000, Пермский край, г. Пермь, ул. Луначарского, д. 99, кв. 61',
   restaurantAddress: '614002, г. Пермь, ул. Белинского, 6Б',
   phone: '+7 (342) 223-33-13',
-  phoneHref: 'tel:+73422233313',
+  phoneHref: '/call#phone=%2B73422233313',
   email: 'hazelmind@bk.ru',
   emailHref: 'mailto:hazelmind@bk.ru',
   workingHours: 'пн–чт и вс: 12:00–00:00; пт–сб: 12:00–01:00',
