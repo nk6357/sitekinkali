@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type MouseEvent } from 'react';
 import { useCart } from '../../hooks/useCart';
 import { Icon } from '../icons/Icon';
 import { getCartBadgeText } from '../../utils/formatters';
@@ -33,6 +33,12 @@ export function Header() {
 
   const badgeText = getCartBadgeText(totalItems);
 
+  const handleHomeNavigation = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    setIsMobileMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <header
       id="top"
@@ -47,6 +53,7 @@ export function Header() {
           {/* Логотип */}
           <a
             href="#top"
+            onClick={handleHomeNavigation}
             className="flex flex-shrink-0 items-center rounded-lg transition-opacity hover:opacity-75"
             aria-label="На главную"
           >
@@ -67,6 +74,7 @@ export function Header() {
               <a
                 key={item.label}
                 href={item.href}
+                onClick={item.href === '#top' ? handleHomeNavigation : undefined}
                 className="whitespace-nowrap rounded-lg px-4 py-2 font-body text-sm text-brand-900 transition-colors hover:bg-brand-50"
               >
                 {item.label}
@@ -114,7 +122,7 @@ export function Header() {
               <a
                 key={item.label}
                 href={item.href}
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={item.href === '#top' ? handleHomeNavigation : () => setIsMobileMenuOpen(false)}
                 className="whitespace-nowrap rounded-lg bg-brand-100 px-3 py-3 text-center text-brand-900 transition-colors hover:bg-brand-200"
               >
                 {item.label}
