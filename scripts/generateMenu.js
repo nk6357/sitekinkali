@@ -27,7 +27,6 @@ const MENU_CATEGORIES = [
   'Десерты',
   'Горячие напитки',
   'Безалкогольные напитки',
-  'Алкоголь',
   'Фуршетное меню',
 ];
 
@@ -82,7 +81,7 @@ function loadMenuItem(categoryPath, itemName, category) {
     description: `"${description.replace(/"/g, '\\"')}"`,
     weight: '',
     price,
-    category: `"${category}"`,
+    category: JSON.stringify(category),
     image: imageFile ? `"Menu12/${category}/${itemName}/${imageFile}"` : `""`,
     isAvailable: true,
   };
@@ -100,7 +99,16 @@ function generateMenuTS() {
       continue;
     }
 
-    const items = fs.readdirSync(categoryPath);
+    const items = fs.readdirSync(categoryPath).sort((left, right) => {
+      const leftIsNumeric = /^[0-9]+$/.test(left);
+      const rightIsNumeric = /^[0-9]+$/.test(right);
+
+      if (leftIsNumeric && rightIsNumeric) {
+        return Number(left) - Number(right);
+      }
+
+      return left.localeCompare(right, 'ru');
+    });
 
     for (const itemName of items) {
       const itemPath = path.join(categoryPath, itemName);
@@ -135,7 +143,6 @@ export const MENU_CATEGORIES: MenuCategory[] = [
   'Десерты',
   'Горячие напитки',
   'Безалкогольные напитки',
-  'Алкоголь',
   'Фуршетное меню',
 ];
 
