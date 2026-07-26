@@ -40,8 +40,8 @@ export function ReservationSection() {
     setError('');
 
     const guests = Number(form.guests);
-    if (!Number.isInteger(guests) || guests < 1 || guests > 30) {
-      setError('Количество человек должно быть целым числом от 1 до 30.');
+    if (!Number.isInteger(guests) || guests < 1 || guests > 50) {
+      setError('Количество человек должно быть целым числом от 1 до 50.');
       return;
     }
 
@@ -185,7 +185,7 @@ export function ReservationSection() {
                     onChange={(event) => handleGuestsChange(event.target.value)}
                     inputMode="numeric"
                     min={1}
-                    max={30}
+                    max={50}
                     step={1}
                     className="h-14 w-full rounded-lg border-2 border-brand-200 bg-brand-50 px-4 outline-none transition-colors focus:border-brand-900"
                     required
