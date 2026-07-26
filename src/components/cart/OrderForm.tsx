@@ -161,7 +161,7 @@ export function OrderForm() {
           type="text"
           value={formData.name}
           onChange={(val) => handleInputChange('name', val as string)}
-          placeholder="Иван"
+          placeholder="Гога"
           required
         />
 
