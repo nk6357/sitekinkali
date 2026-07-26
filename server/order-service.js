@@ -187,7 +187,11 @@ function getRestaurantDateTimeParts(value = new Date()) {
 }
 
 function validateLocalDateTime(value) {
-  return cleanText(value, 'дата и время', { min: 2, max: 120 });
+  if (typeof value === 'string' && value.normalize('NFKC').trim().length > 59) {
+    throw new OrderRequestError(400, 'Дата и время должны содержать не более 59 символов');
+  }
+
+  return cleanText(value, 'дата и время', { min: 2, max: 59 });
 }
 
 export function validateReservationPayload(payload) {
