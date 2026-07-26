@@ -39,6 +39,17 @@ test('escapes every dangerous HTML character', () => {
 test('uses the default comment when the comment is empty', () => {
   const order = validateOrderPayload(createValidPayload());
   assert.equal(order.comment, 'Как можно скорее');
+  assert.equal(order.orderFormat, 'В зале');
+});
+
+test('accepts only supported order formats', () => {
+  const takeawayOrder = validateOrderPayload(createValidPayload({ orderFormat: 'С собой' }));
+  assert.equal(takeawayOrder.orderFormat, 'С собой');
+
+  assert.throws(
+    () => validateOrderPayload(createValidPayload({ orderFormat: '<script>alert(1)</script>' })),
+    (error) => error instanceof OrderRequestError && error.status === 400,
+  );
 });
 
 test('rejects a forged order total', () => {
