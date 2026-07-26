@@ -22,6 +22,7 @@ const initialForm: ReservationForm = {
 export function ReservationSection() {
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reservationId, setReservationId] = useState('');
 
@@ -40,6 +41,7 @@ export function ReservationSection() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
+    setPhoneError('');
 
     const guests = Number(form.guests);
     if (!Number.isInteger(guests) || guests < 1 || guests > 50) {
@@ -53,7 +55,7 @@ export function ReservationSection() {
     }
 
     if (!/^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(form.phone)) {
-      setError('Укажите телефон в формате +7 (000) 000-00-00.');
+      setPhoneError('Укажите телефон в формате +7 (000) 000-00-00.');
       return;
     }
 
@@ -165,10 +167,15 @@ export function ReservationSection() {
                     type="tel"
                     value={form.phone}
                     onChange={(event) =>
-                      setForm((current) => ({
-                        ...current,
-                        phone: formatPhone(event.target.value),
-                      }))
+                      {
+                        setForm((current) => ({
+                          ...current,
+                          phone: formatPhone(event.target.value),
+                        }));
+                        if (phoneError) {
+                          setPhoneError('');
+                        }
+                      }
                     }
                     onBlur={(event) =>
                       setForm((current) => ({
@@ -180,9 +187,20 @@ export function ReservationSection() {
                     inputMode="tel"
                     placeholder="+7 (000) 000-00-00"
                     maxLength={18}
+                    aria-invalid={Boolean(phoneError)}
+                    aria-describedby={phoneError ? 'reservation-phone-error' : undefined}
                     className="h-14 w-full rounded-lg border-2 border-brand-200 bg-brand-50 px-4 outline-none transition-colors focus:border-brand-900"
                     required
                   />
+                  {phoneError && (
+                    <p
+                      id="reservation-phone-error"
+                      role="alert"
+                      className="text-sm font-semibold text-red-600"
+                    >
+                      {phoneError}
+                    </p>
+                  )}
                 </label>
 
                 <label className="space-y-2">
