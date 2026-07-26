@@ -145,6 +145,11 @@ export function validateOrderPayload(payload) {
     typeof payload.comment === 'string' && payload.comment.trim()
       ? cleanText(payload.comment, 'комментарий', { min: 1, max: 500, multiline: true })
       : DEFAULT_COMMENT;
+  const orderFormat = payload.orderFormat === undefined ? 'В зале' : payload.orderFormat;
+
+  if (!['В зале', 'С собой'].includes(orderFormat)) {
+    throw new OrderRequestError(400, 'Некорректный формат заказа');
+  }
 
   return {
     customer,
@@ -152,6 +157,7 @@ export function validateOrderPayload(payload) {
     totalPrice: calculatedTotalPrice,
     totalItems: items.reduce((sum, item) => sum + item.quantity, 0),
     pickupLocation: process.env.PICKUP_LOCATION || DEFAULT_PICKUP_LOCATION,
+    orderFormat,
     paymentMethod: process.env.PAYMENT_METHOD || DEFAULT_PAYMENT_METHOD,
     comment,
     orderId: crypto.randomUUID(),
@@ -479,6 +485,7 @@ function createEmailLayout({ eyebrow, title, intro, order, recipientDetails }) {
                 </div>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px">
                   <tr><td style="padding:5px 0;color:#7a695a">Самовывоз</td><td align="right" style="padding:5px 0;color:#2f251d">${escapeHtml(order.pickupLocation)}</td></tr>
+                  <tr><td style="padding:5px 0;color:#7a695a">Формат заказа</td><td align="right" style="padding:5px 0;color:#2f251d">${escapeHtml(order.orderFormat)}</td></tr>
                   <tr><td style="padding:5px 0;color:#7a695a">Оплата</td><td align="right" style="padding:5px 0;color:#2f251d">${escapeHtml(order.paymentMethod)}</td></tr>
                   <tr><td style="padding:5px 0;color:#7a695a">Комментарий</td><td align="right" style="padding:5px 0;color:#2f251d">${escapeHtml(order.comment).replaceAll('\n', '<br>')}</td></tr>
                   <tr><td style="padding:5px 0;color:#7a695a">Создан</td><td align="right" style="padding:5px 0;color:#2f251d">${escapeHtml(formatDate(order.createdAt))}</td></tr>
@@ -525,6 +532,7 @@ ${createItemsText(order.items)}
 
 Итого: ${formatPrice(order.totalPrice)}
 Самовывоз: ${order.pickupLocation}
+Формат заказа: ${order.orderFormat}
 Оплата: ${order.paymentMethod}
 Комментарий: ${order.comment}
 Создан: ${formatDate(order.createdAt)}`,
@@ -554,6 +562,7 @@ ${createItemsText(order.items)}
 
 Итого: ${formatPrice(order.totalPrice)}
 Самовывоз: ${order.pickupLocation}
+Формат заказа: ${order.orderFormat}
 Оплата: ${order.paymentMethod}
 Комментарий: ${order.comment}
 Номер заказа: ${order.orderId}
