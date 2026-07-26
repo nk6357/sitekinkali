@@ -187,39 +187,7 @@ function getRestaurantDateTimeParts(value = new Date()) {
 }
 
 function validateLocalDateTime(value) {
-  const dateTime = cleanText(value, 'дата и время', { min: 16, max: 16 });
-  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/u.exec(dateTime);
-
-  if (!match) {
-    throw new OrderRequestError(400, 'Укажите корректные дату и время');
-  }
-
-  const [, year, month, day, hour, minute] = match;
-  const numeric = [year, month, day, hour, minute].map(Number);
-  const [numericYear, numericMonth, numericDay, numericHour, numericMinute] = numeric;
-  const calendarDate = new Date(
-    Date.UTC(numericYear, numericMonth - 1, numericDay, numericHour, numericMinute),
-  );
-
-  if (
-    calendarDate.getUTCFullYear() !== numericYear ||
-    calendarDate.getUTCMonth() !== numericMonth - 1 ||
-    calendarDate.getUTCDate() !== numericDay ||
-    numericHour > 23 ||
-    numericMinute > 59
-  ) {
-    throw new OrderRequestError(400, 'Укажите корректные дату и время');
-  }
-
-  const now = getRestaurantDateTimeParts();
-  const currentRestaurantMinute =
-    `${now.year}-${now.month}-${now.day}T${now.hour}:${now.minute}`;
-
-  if (dateTime <= currentRestaurantMinute) {
-    throw new OrderRequestError(400, 'Выберите будущие дату и время');
-  }
-
-  return dateTime;
+  return cleanText(value, 'дата и время', { min: 2, max: 120 });
 }
 
 export function validateReservationPayload(payload) {
@@ -409,16 +377,6 @@ function createPhoneLink(phone, siteOrigin) {
   const normalizedPhone = `+${digits}`;
   const href = `${siteOrigin}/call#phone=${encodeURIComponent(normalizedPhone)}`;
   return `<a href="${escapeHtml(href)}" style="color:inherit;text-decoration:underline">${escapeHtml(phone)}</a>`;
-}
-
-function formatReservationDateTime(value) {
-  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/u.exec(value);
-  if (!match) {
-    return value;
-  }
-
-  const [, year, month, day, hour, minute] = match;
-  return `${day}.${month}.${year} в ${hour}:${minute}`;
 }
 
 function createItemsHtml(items) {
@@ -618,7 +576,7 @@ async function sendOrderEmails(order, siteOrigin) {
 }
 
 function createReservationAdminEmail(reservation, siteOrigin) {
-  const formattedDateTime = formatReservationDateTime(reservation.dateTime);
+  const formattedDateTime = reservation.dateTime;
 
   return {
     subject: `Новая бронь Кинкали · ${reservation.reservationId.slice(0, 8)}`,
