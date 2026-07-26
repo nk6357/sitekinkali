@@ -68,7 +68,8 @@ test('accepts a valid table reservation with an integer guest count', () => {
     phone: '+7 (999) 123-45-67',
     guests: 4,
     dateTime: '2099-12-31T20:00',
-    consent: true,
+    offerAccepted: true,
+    personalDataConsent: true,
   });
 
   assert.equal(reservation.guests, 4);
@@ -83,7 +84,8 @@ test('rejects a fractional guest count in a reservation', () => {
         phone: '+7 (999) 123-45-67',
         guests: 2.5,
         dateTime: '2099-12-31T20:00',
-        consent: true,
+        offerAccepted: true,
+        personalDataConsent: true,
       }),
     (error) => error instanceof OrderRequestError && error.status === 400,
   );
@@ -97,7 +99,23 @@ test('rejects a reservation without personal data consent', () => {
         phone: '+7 (999) 123-45-67',
         guests: 2,
         dateTime: '2099-12-31T20:00',
-        consent: false,
+        offerAccepted: true,
+        personalDataConsent: false,
+      }),
+    (error) => error instanceof OrderRequestError && error.status === 400,
+  );
+});
+
+test('rejects a reservation without accepting the public offer', () => {
+  assert.throws(
+    () =>
+      validateReservationPayload({
+        name: 'Анна',
+        phone: '+7 (999) 123-45-67',
+        guests: 2,
+        dateTime: '2099-12-31T20:00',
+        offerAccepted: false,
+        personalDataConsent: true,
       }),
     (error) => error instanceof OrderRequestError && error.status === 400,
   );
