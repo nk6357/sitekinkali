@@ -82,16 +82,6 @@ export function About() {
           </div>
         </div>
 
-        {/* Блок с наградами/сертификатами */}
-        <div className="bg-brand-100 rounded-xl p-8 text-center">
-          <h3 className="font-heading text-2xl font-semibold text-brand-900 mb-4">
-            Награды и признание
-          </h3>
-          <p className="text-brand-700 max-w-2xl mx-auto">
-            Лучший ресторан грузинской кухни в Пермской области (2023). 
-            Рекомендован порталом TripAdvisor и входит в топ учреждений общественного питания города.
-          </p>
-        </div>
       </div>
     </section>
   );

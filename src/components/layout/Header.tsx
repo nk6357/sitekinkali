@@ -23,10 +23,11 @@ export function Header() {
   }, []);
 
   const navItems = [
-    { label: 'Главная', href: '/' },
+    { label: 'Главная', href: '#top' },
     { label: 'Меню', href: '#menu-section' },
     { label: 'О ресторане', href: '#about' },
-    { label: 'Доставка', href: '#order-section', emphasized: true },
+    { label: 'Доставка', href: '#order-section' },
+    { label: 'Бронь', href: '#reservation' },
     { label: 'Контакты', href: '#contacts' },
   ];
 
@@ -34,6 +35,7 @@ export function Header() {
 
   return (
     <header
+      id="top"
       className={`sticky top-0 z-40 w-full border-b border-brand-200 transition-all duration-300 ${
         isScrolled
           ? 'bg-brand-50/90 backdrop-blur-md shadow-sm'
@@ -44,7 +46,7 @@ export function Header() {
         <div className="flex min-h-12 items-center justify-between gap-3">
           {/* Логотип */}
           <a
-            href="/"
+            href="#top"
             className="flex flex-shrink-0 items-center rounded-lg transition-opacity hover:opacity-75"
             aria-label="На главную"
           >
@@ -65,27 +67,35 @@ export function Header() {
               <a
                 key={item.label}
                 href={item.href}
-                className={`whitespace-nowrap rounded-lg px-4 py-2 font-body text-sm text-brand-900 transition-colors ${
-                  item.emphasized
-                    ? 'bg-brand-300 hover:bg-brand-400'
-                    : 'hover:bg-brand-50'
-                }`}
+                className="whitespace-nowrap rounded-lg px-4 py-2 font-body text-sm text-brand-900 transition-colors hover:bg-brand-50"
               >
                 {item.label}
               </a>
             ))}
           </nav>
 
-          {/* Кнопка корзины + бургер-меню */}
+          {/* Информация, корзина и мобильное меню */}
           <div className="flex items-center gap-2">
+            <a
+              href="#about"
+              className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full transition-opacity hover:opacity-70"
+              aria-label="О ресторане"
+            >
+              <Icon
+                name="инфо"
+                size="xl"
+                alt="Информация"
+                className="h-11 w-11 rounded-full border-[0.5px] border-brand-900"
+              />
+            </a>
+
             {/* Кнопка корзины */}
             <button
               onClick={openCart}
-              className="relative flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg
-                bg-brand-900 text-brand-50 hover:bg-brand-800 transition-colors"
+              className="relative flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full transition-opacity hover:opacity-70"
               aria-label="Открыть корзину"
             >
-              <Icon name="cart" size="md" alt="Корзина" className="rounded-sm" />
+              <Icon name="cart" size="xl" alt="Корзина" className="h-11 w-11 rounded-full" />
               
               {/* Бейдж с количеством */}
               {badgeText && (
@@ -116,11 +126,7 @@ export function Header() {
                 key={item.label}
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`whitespace-nowrap rounded-lg px-3 py-3 text-center text-brand-900 transition-colors ${
-                  item.emphasized
-                    ? 'bg-brand-300 hover:bg-brand-400'
-                    : 'bg-brand-100 hover:bg-brand-200'
-                }`}
+                className="whitespace-nowrap rounded-lg bg-brand-100 px-3 py-3 text-center text-brand-900 transition-colors hover:bg-brand-200"
               >
                 {item.label}
               </a>

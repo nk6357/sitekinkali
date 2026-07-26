@@ -1,4 +1,5 @@
 import { Icon } from '../icons/Icon';
+import { LEGAL_DETAILS } from '../../data/legal';
 
 /**
  * Секция контактов с адресом, телефоном, часами работы, картой и соцсетями
@@ -12,55 +13,55 @@ export function Contacts() {
           Контакты
         </h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
           {/* Информация */}
-          <div className="space-y-8">
+          <div className="space-y-10 text-center">
             {/* Адрес */}
             <div>
-              <h3 className="font-heading text-xl font-semibold text-brand-900 mb-2">
+              <h3 className="mb-3 font-heading text-2xl font-semibold text-brand-900 md:text-3xl">
                 Адрес
               </h3>
-              <p className="text-brand-700 text-lg">
+              <p className="text-xl text-brand-700 md:text-2xl">
                 г. Пермь, ул. Белинского, 6Б
               </p>
-              <p className="text-brand-500 text-sm mt-2">
+              <p className="mt-2 text-base text-brand-500 md:text-lg">
                 Центр города, легко найти по картам
               </p>
             </div>
 
             {/* Телефон */}
             <div>
-              <h3 className="font-heading text-xl font-semibold text-brand-900 mb-2">
+              <h3 className="mb-3 font-heading text-2xl font-semibold text-brand-900 md:text-3xl">
                 Телефон
               </h3>
               <a
-                href="tel:+79999999999"
-                className="text-brand-900 hover:text-brand-700 text-lg font-semibold transition-colors"
+                href={LEGAL_DETAILS.phoneHref}
+                className="text-2xl font-semibold text-brand-900 transition-colors hover:text-brand-700 md:text-3xl"
               >
-                +7 (999) 999-99-99
+                {LEGAL_DETAILS.phone}
               </a>
-              <p className="text-brand-500 text-sm mt-2">
+              <p className="mt-2 text-base text-brand-500 md:text-lg">
                 Звоните для уточнения наличия и деталей
               </p>
             </div>
 
             {/* Часы работы */}
             <div>
-              <h3 className="font-heading text-xl font-semibold text-brand-900 mb-2">
+              <h3 className="mb-3 font-heading text-2xl font-semibold text-brand-900 md:text-3xl">
                 Часы работы
               </h3>
-              <div className="text-brand-700 space-y-1">
-                <p>Пн-Вс: 11:00 - 23:00</p>
-                <p className="text-brand-500 text-sm">Перерыв на подготовку: 15:00 - 17:00</p>
+              <div className="space-y-2 text-xl text-brand-700 md:text-2xl">
+                <p>Пн–чт и вс: 12:00–00:00</p>
+                <p>Пт–сб: 12:00–01:00</p>
               </div>
             </div>
 
             {/* Соцсети */}
             <div>
-              <h3 className="font-heading text-xl font-semibold text-brand-900 mb-4">
+              <h3 className="mb-4 font-heading text-2xl font-semibold text-brand-900 md:text-3xl">
                 Мы в соцсетях
               </h3>
-              <div className="flex items-center gap-6">
+              <div className="flex items-center justify-center gap-7 text-lg md:text-xl">
                 <a
                   href="https://t.me/kinkali_restaurant"
                   target="_blank"
@@ -91,13 +92,13 @@ export function Contacts() {
           </div>
 
           {/* Карта */}
-          <div className="h-96 bg-brand-100 rounded-xl overflow-hidden shadow-md flex flex-col items-center justify-center p-8">
+          <div className="flex min-h-96 flex-col items-center justify-center overflow-hidden rounded-xl bg-brand-100 p-8 text-center shadow-md">
             <div className="text-center">
               <Icon name="инфо" size="lg" alt="Адрес" className="text-brand-900 mx-auto mb-4" />
-              <p className="text-brand-900 font-semibold text-lg mb-2">
+              <p className="mb-3 text-xl font-semibold text-brand-900 md:text-2xl">
                 г. Пермь, ул. Белинского, 6Б
               </p>
-              <p className="text-brand-700 mb-6">
+              <p className="mb-6 text-lg text-brand-700 md:text-xl">
                 Нажмите, чтобы открыть на карте
               </p>
               <a

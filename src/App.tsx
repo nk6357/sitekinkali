@@ -4,6 +4,7 @@ import { Footer } from './components/layout/Footer';
 import { About } from './components/sections/About';
 import { Menu } from './components/sections/Menu';
 import { OrderSection } from './components/sections/OrderSection';
+import { ReservationSection } from './components/sections/ReservationSection';
 import { Contacts } from './components/sections/Contacts';
 import { Cart } from './components/cart/Cart';
 import { CheckoutPage } from './components/checkout/CheckoutPage';
@@ -33,6 +34,7 @@ function AppContent() {
       <Menu />
       <About />
       <OrderSection />
+      <ReservationSection />
       <Contacts />
       <Footer />
       <Cart />
