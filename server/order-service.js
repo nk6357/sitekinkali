@@ -531,10 +531,10 @@ ${createItemsText(order.items)}
   };
 }
 
-function createCustomerEmail(order, siteOrigin) {
+function createCustomerEmail(order) {
   const customerPhone = `
     <div style="padding:18px;background:#fff;border:1px solid #eadfce;border-radius:14px">
-      <strong>Телефон:</strong> ${createPhoneLink(order.customer.phone, siteOrigin)}
+      <strong>Телефон:</strong> ${escapeHtml(order.customer.phone)}
     </div>`;
 
   return {
@@ -568,7 +568,7 @@ async function sendOrderEmails(order, siteOrigin) {
   const fromName = process.env.SMTP_FROM_NAME?.trim() || 'Ресторан Кинкали';
   const transporter = getTransporter();
   const adminMessage = createAdminEmail(order, siteOrigin);
-  const customerMessage = createCustomerEmail(order, siteOrigin);
+  const customerMessage = createCustomerEmail(order);
 
   const results = await Promise.allSettled([
     transporter.sendMail({
