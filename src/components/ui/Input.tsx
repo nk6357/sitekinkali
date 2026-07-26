@@ -20,6 +20,7 @@ export function Input({
   disabled = false,
   rows,
   checked,
+  error,
 }: InputProps & {
   value?: string;
   onChange?: (value: string | boolean) => void;
@@ -30,6 +31,7 @@ export function Input({
   disabled?: boolean;
   rows?: number;
   checked?: boolean;
+  error?: string;
 }) {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -127,8 +129,17 @@ export function Input({
         pattern={pattern}
         onFocus={() => setIsFocused(true)}
         onBlur={type === 'tel' ? handlePhoneBlur : () => setIsFocused(false)}
+        autoComplete={type === 'tel' ? 'tel' : undefined}
+        inputMode={type === 'tel' ? 'tel' : undefined}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${id}-error` : undefined}
         className={inputClasses}
       />
+      {error && (
+        <p id={`${id}-error`} role="alert" className="text-sm font-semibold text-red-600">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
