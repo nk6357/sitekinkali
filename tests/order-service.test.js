@@ -87,6 +87,24 @@ test('accepts a valid table reservation with an integer guest count', () => {
   assert.equal(reservation.dateTime, '31 декабря в 20:00');
 });
 
+test('rejects reservation time text longer than 59 characters with a public message', () => {
+  assert.throws(
+    () =>
+      validateReservationPayload({
+        name: 'Анна',
+        phone: '+7 (999) 123-45-67',
+        guests: 4,
+        dateTime: 'а'.repeat(60),
+        offerAccepted: true,
+        personalDataConsent: true,
+      }),
+    (error) =>
+      error instanceof OrderRequestError &&
+      error.status === 400 &&
+      error.publicMessage === 'Дата и время должны содержать не более 59 символов',
+  );
+});
+
 test('rejects a fractional guest count in a reservation', () => {
   assert.throws(
     () =>
