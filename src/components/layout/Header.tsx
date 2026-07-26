@@ -23,10 +23,10 @@ export function Header() {
   }, []);
 
   const navItems = [
-    { label: 'Главная', href: '#' },
-    { label: 'Меню', href: '#menu' },
+    { label: 'Главная', href: '/' },
+    { label: 'Меню', href: '#menu-section' },
     { label: 'О ресторане', href: '#about' },
-    { label: 'Доставка', href: '#delivery' },
+    { label: 'Доставка', href: '#order-section', emphasized: true },
     { label: 'Контакты', href: '#contacts' },
   ];
 
@@ -34,26 +34,42 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-40 w-full transition-all duration-300 ${
+      className={`sticky top-0 z-40 w-full border-b border-brand-200 transition-all duration-300 ${
         isScrolled
-          ? 'bg-brand-50/80 backdrop-blur-md shadow-sm'
+          ? 'bg-brand-50/90 backdrop-blur-md shadow-sm'
           : 'bg-brand-50'
       }`}
     >
-      <div className="mx-auto max-w-7xl px-4 py-4">
-        <div className="flex items-center justify-between gap-4">
+      <div className="mx-auto max-w-7xl px-3 py-2.5 sm:px-4 sm:py-3">
+        <div className="flex min-h-12 items-center justify-between gap-3">
           {/* Логотип */}
-          <a href="/" className="flex items-center gap-2 flex-shrink-0">
-            <Icon name="аватар" size="md" alt="Логотип" />
+          <a
+            href="/"
+            className="flex flex-shrink-0 items-center rounded-lg transition-opacity hover:opacity-75"
+            aria-label="На главную"
+          >
+            <img
+              src="/brandbook/аватар.png"
+              alt="Кинкали"
+              width={52}
+              height={52}
+              className="h-11 w-11 object-contain sm:h-14 sm:w-14"
+              loading="eager"
+              decoding="sync"
+            />
           </a>
 
           {/* Навигация (видна только на десктопе) */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden items-center gap-1 rounded-xl bg-brand-100/70 p-1 lg:flex">
             {navItems.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
-                className="text-sm font-body text-brand-900 hover:text-brand-700 transition-colors"
+                className={`whitespace-nowrap rounded-lg px-4 py-2 font-body text-sm text-brand-900 transition-colors ${
+                  item.emphasized
+                    ? 'bg-brand-300 hover:bg-brand-400'
+                    : 'hover:bg-brand-50'
+                }`}
               >
                 {item.label}
               </a>
@@ -61,15 +77,15 @@ export function Header() {
           </nav>
 
           {/* Кнопка корзины + бургер-меню */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             {/* Кнопка корзины */}
             <button
               onClick={openCart}
-              className="relative flex items-center justify-center w-10 h-10 rounded-lg 
+              className="relative flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg
                 bg-brand-900 text-brand-50 hover:bg-brand-800 transition-colors"
               aria-label="Открыть корзину"
             >
-              <Icon name="инфо" size="md" alt="Корзина" className="text-brand-50" />
+              <Icon name="cart" size="md" alt="Корзина" className="rounded-sm" />
               
               {/* Бейдж с количеством */}
               {badgeText && (
@@ -83,8 +99,8 @@ export function Header() {
             {/* Бургер-меню (видно только на мобильных) */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg 
-                bg-brand-900 text-brand-50 hover:bg-brand-800 transition-colors"
+              className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg
+                bg-brand-900 text-brand-50 hover:bg-brand-800 transition-colors lg:hidden"
               aria-label="Открыть меню"
             >
               <Icon name="меню" size="md" alt="Меню" className="text-brand-50" />
@@ -94,13 +110,17 @@ export function Header() {
 
         {/* Мобильное меню */}
         {isMobileMenuOpen && (
-          <nav className="md:hidden mt-4 flex flex-col gap-2 pb-4">
+          <nav className="mt-3 grid grid-cols-2 gap-2 pb-2 lg:hidden">
             {navItems.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="px-4 py-3 rounded-lg text-brand-900 hover:bg-brand-100 transition-colors"
+                className={`whitespace-nowrap rounded-lg px-3 py-3 text-center text-brand-900 transition-colors ${
+                  item.emphasized
+                    ? 'bg-brand-300 hover:bg-brand-400'
+                    : 'bg-brand-100 hover:bg-brand-200'
+                }`}
               >
                 {item.label}
               </a>

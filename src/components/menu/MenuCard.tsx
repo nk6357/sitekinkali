@@ -56,12 +56,12 @@ export function MenuCard({ item }: MenuCardProps) {
   return (
     <div
       data-menu-id={item.id}
-      className="group flex min-h-0 h-full flex-col overflow-hidden rounded-xl border border-brand-200 bg-white hover:shadow-lg hover:scale-102 transition-all duration-300"
+      className="group flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-brand-200 bg-white transition-all duration-300 hover:shadow-lg"
     >
       <span className="sr-only">ID блюда {item.id}</span>
 
       {/* Фото блюда */}
-      <div className="relative h-36 bg-brand-100 overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden bg-brand-100">
         <img
           src={imageSrc}
           alt={item.name}
@@ -72,34 +72,34 @@ export function MenuCard({ item }: MenuCardProps) {
       </div>
 
       {/* Контент карточки */}
-      <div className="p-4 flex flex-col flex-1">
+      <div className="flex flex-1 flex-col p-3 sm:p-4">
         {/* Название */}
-        <h3 className="font-heading font-semibold text-lg text-brand-900 mb-2 line-clamp-2">
+        <h3 className="mb-1.5 line-clamp-3 font-heading text-sm font-semibold leading-snug text-brand-900 sm:mb-2 sm:text-lg">
           {item.name}
         </h3>
 
         {/* Описание */}
         {item.description && (
-          <p className="font-body text-sm text-brand-700 mb-3 line-clamp-2">
+          <p className="mb-2 line-clamp-3 font-body text-xs leading-snug text-brand-700 sm:mb-3 sm:text-sm">
             {item.description}
           </p>
         )}
 
         {/* Вес/выход */}
         {item.weight && (
-          <p className="font-body text-xs text-brand-500 mb-3">
+          <p className="mb-2 font-body text-[11px] leading-snug text-brand-500 sm:mb-3 sm:text-xs">
             {item.weight}
           </p>
         )}
 
-        <div className="mt-auto border-t border-brand-100 pt-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <span className="font-heading text-xl font-semibold text-brand-900">
+        <div className="mt-auto border-t border-brand-100 pt-3 sm:pt-4">
+          <div className="flex flex-col gap-2 sm:gap-3 xl:flex-row xl:items-center xl:justify-between">
+            <span className="whitespace-nowrap font-heading text-base font-semibold text-brand-900 sm:text-xl">
               {formatPrice(item.price)}
             </span>
 
             {quantity > 0 ? (
-              <div className="inline-flex h-10 w-full max-w-[150px] items-center justify-between rounded-lg bg-brand-900 px-3 text-brand-50 font-heading font-semibold text-sm sm:w-auto">
+              <div className="inline-flex h-10 w-full items-center justify-between rounded-lg bg-brand-900 px-2 font-heading text-sm font-semibold text-brand-50 xl:max-w-[150px]">
                 <button
                   type="button"
                   onClick={handleDecrement}
@@ -125,7 +125,7 @@ export function MenuCard({ item }: MenuCardProps) {
                 variant="primary"
                 onClick={handleAddToCart}
                 disabled={!item.isAvailable}
-                className="h-10 w-full max-w-[140px] px-3 text-sm"
+                className="h-10 w-full whitespace-nowrap px-2 text-xs sm:text-sm xl:max-w-[140px]"
               >
                 {item.isAvailable ? 'В корзину' : 'Нет в наличии'}
               </Button>

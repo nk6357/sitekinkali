@@ -9,7 +9,7 @@ interface MenuGridProps {
 
 /**
  * Сетка карточек блюд для текущей категории
- * 3 колонки на десктопе, 2 на планшете, 1 на мобильном
+ * 2 колонки на мобильном, 3 на планшете, 4 на широком экране
  */
 export function MenuGrid({ items, activeCategory }: MenuGridProps) {
   // Фильтровать блюда по активной категории
@@ -29,7 +29,7 @@ export function MenuGrid({ items, activeCategory }: MenuGridProps) {
 
   return (
     <div
-      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-10 animate-fadeIn"
+      className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 md:gap-6 lg:grid-cols-4 lg:gap-8 xl:gap-10 animate-fadeIn"
     >
       {filteredItems.map((item) => (
         <MenuCard key={item.id} item={item} />

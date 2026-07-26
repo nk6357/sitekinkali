@@ -21,7 +21,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    font-size: 18px;
+    font-size: clamp(15px, 0.25vw + 14px, 18px);
   }
 
   body {
@@ -39,5 +39,20 @@
 
   p {
     @apply text-lg leading-relaxed;
+  }
+
+  img {
+    max-width: 100%;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }

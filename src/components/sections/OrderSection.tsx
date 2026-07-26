@@ -30,7 +30,7 @@ export function OrderSection() {
               href="https://eda.yandex.ru/perm/r/kinkali"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto bg-brand-300 text-brand-900 hover:bg-brand-400 active:bg-brand-500 px-8 py-4 text-lg font-semibold"
+              className="w-full bg-brand-300 px-8 py-4 text-lg font-semibold text-brand-900 hover:bg-brand-400 active:bg-brand-500 sm:w-auto"
             >
               Доставка
             </Button>

@@ -10,6 +10,7 @@ export type IconName =
   | 'сердце'
   | 'лупа с человеком внутри'
   | 'бар'
+  | 'cart'
   | 'аватар';
 
 export type IconSize = 'sm' | 'md' | 'lg' | 'xl';

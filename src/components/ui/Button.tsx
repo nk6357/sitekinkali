@@ -18,7 +18,7 @@ export function Button({
   // Базовые стили для всех кнопок
   const baseClasses =
     'inline-flex items-center justify-center px-6 py-3 rounded-lg font-heading font-semibold ' +
-    'transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
+    'whitespace-nowrap transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
 
   // Стили в зависимости от варианта
   const variantClasses = {
