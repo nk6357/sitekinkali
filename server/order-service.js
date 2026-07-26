@@ -225,8 +225,8 @@ export function validateReservationPayload(payload) {
     throw new OrderRequestError(400, 'Необходимо согласие на обработку данных');
   }
 
-  if (!Number.isInteger(payload.guests) || payload.guests < 1 || payload.guests > 30) {
-    throw new OrderRequestError(400, 'Количество человек должно быть целым числом от 1 до 30');
+  if (!Number.isInteger(payload.guests) || payload.guests < 1 || payload.guests > 50) {
+    throw new OrderRequestError(400, 'Количество человек должно быть целым числом от 1 до 50');
   }
 
   return {
