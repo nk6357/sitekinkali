@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { formatPhone } from '../../utils/formatters';
 
 interface ReservationForm {
   name: string;
@@ -156,7 +157,16 @@ export function ReservationSection() {
                     type="tel"
                     value={form.phone}
                     onChange={(event) =>
-                      setForm((current) => ({ ...current, phone: event.target.value }))
+                      setForm((current) => ({
+                        ...current,
+                        phone: formatPhone(event.target.value),
+                      }))
+                    }
+                    onBlur={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        phone: formatPhone(event.target.value),
+                      }))
                     }
                     autoComplete="tel"
                     inputMode="tel"
