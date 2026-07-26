@@ -132,7 +132,11 @@ export function CheckoutPage({ onClose }: CheckoutPageProps) {
       }
 
       // Показать сообщение об успехе
-      setSuccessMessage('Спасибо! Ваш заказ принят. Проверьте email для подтверждения.');
+      setSuccessMessage(
+        result?.receiptSent === false
+          ? 'Спасибо! Ваш заказ принят. Ресторан свяжется с вами для подтверждения.'
+          : 'Спасибо! Ваш заказ принят. Проверьте email для подтверждения.',
+      );
       setOrderId(result?.orderId || '');
 
       // Очистить корзину
