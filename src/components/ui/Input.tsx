@@ -1,6 +1,6 @@
 import { useState, useCallback, type ChangeEvent } from 'react';
 import type { InputProps } from '../../types';
-import { formatPhone, cleanPhone } from '../../utils/formatters';
+import { formatPhone } from '../../utils/formatters';
 
 /**
  * Универсальный компонент Input для всех типов полей ввода
@@ -36,12 +36,19 @@ export function Input({
   // Специальная обработка для телефона: форматирование и маска
   const handlePhoneChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      const input = e.target.value;
-      const cleaned = cleanPhone(input);
-      const formatted = formatPhone(cleaned);
+      const formatted = formatPhone(e.target.value);
       onChange?.(formatted);
     },
     [onChange]
+  );
+
+  const handlePhoneBlur = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const formatted = formatPhone(e.target.value);
+      onChange?.(formatted);
+      setIsFocused(false);
+    },
+    [onChange],
   );
 
   // Базовые классы для всех инпутов
@@ -119,7 +126,7 @@ export function Input({
         maxLength={maxLength}
         pattern={pattern}
         onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        onBlur={type === 'tel' ? handlePhoneBlur : () => setIsFocused(false)}
         className={inputClasses}
       />
     </div>
