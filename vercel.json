@@ -26,6 +26,10 @@
     {
       "source": "/cookies",
       "destination": "/index.html"
+    },
+    {
+      "source": "/call",
+      "destination": "/index.html"
     }
   ],
   "functions": {
