@@ -231,7 +231,7 @@ export function CheckoutPage({ onClose }: CheckoutPageProps) {
             type="text"
             value={formData.name}
             onChange={(value: string | boolean) => handleInputChange('name', value)}
-            placeholder="Иван"
+            placeholder="Гога"
             required
             error={errors.name}
           />
