@@ -31,6 +31,9 @@
   "functions": {
     "api/orders/send-email.js": {
       "maxDuration": 30
+    },
+    "api/reservations/send-email.js": {
+      "maxDuration": 30
     }
   },
   "headers": [

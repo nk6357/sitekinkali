@@ -5,6 +5,7 @@ import {
   escapeHtml,
   isRequestOriginAllowed,
   validateOrderPayload,
+  validateReservationPayload,
 } from '../server/order-service.js';
 
 function createValidPayload(overrides = {}) {
@@ -59,4 +60,45 @@ test('rejects CRLF injection in customer email', () => {
 test('allows the request host and rejects unrelated origins', () => {
   assert.equal(isRequestOriginAllowed('https://kinkali.example', 'kinkali.example'), true);
   assert.equal(isRequestOriginAllowed('https://evil.example', 'kinkali.example'), false);
+});
+
+test('accepts a valid table reservation with an integer guest count', () => {
+  const reservation = validateReservationPayload({
+    name: 'Анна',
+    phone: '+7 (999) 123-45-67',
+    guests: 4,
+    dateTime: '2099-12-31T20:00',
+    consent: true,
+  });
+
+  assert.equal(reservation.guests, 4);
+  assert.equal(reservation.dateTime, '2099-12-31T20:00');
+});
+
+test('rejects a fractional guest count in a reservation', () => {
+  assert.throws(
+    () =>
+      validateReservationPayload({
+        name: 'Анна',
+        phone: '+7 (999) 123-45-67',
+        guests: 2.5,
+        dateTime: '2099-12-31T20:00',
+        consent: true,
+      }),
+    (error) => error instanceof OrderRequestError && error.status === 400,
+  );
+});
+
+test('rejects a reservation without personal data consent', () => {
+  assert.throws(
+    () =>
+      validateReservationPayload({
+        name: 'Анна',
+        phone: '+7 (999) 123-45-67',
+        guests: 2,
+        dateTime: '2099-12-31T20:00',
+        consent: false,
+      }),
+    (error) => error instanceof OrderRequestError && error.status === 400,
+  );
 });

@@ -74,21 +74,8 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Информация, корзина и мобильное меню */}
+          {/* Корзина и мобильное меню */}
           <div className="flex items-center gap-2">
-            <a
-              href="#about"
-              className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full transition-opacity hover:opacity-70"
-              aria-label="О ресторане"
-            >
-              <Icon
-                name="инфо"
-                size="xl"
-                alt="Информация"
-                className="h-11 w-11 rounded-full border-[0.5px] border-brand-900"
-              />
-            </a>
-
             {/* Кнопка корзины */}
             <button
               onClick={openCart}
@@ -109,11 +96,13 @@ export function Header() {
             {/* Бургер-меню (видно только на мобильных) */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg
-                bg-brand-900 text-brand-50 hover:bg-brand-800 transition-colors lg:hidden"
-              aria-label="Открыть меню"
+              className="flex h-11 w-11 flex-shrink-0 flex-col items-center justify-center gap-1.5 rounded-lg lg:hidden"
+              aria-label={isMobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
+              aria-expanded={isMobileMenuOpen}
             >
-              <Icon name="меню" size="md" alt="Меню" className="text-brand-50" />
+              <span className="h-0.5 w-7 rounded-full bg-brand-900" aria-hidden="true" />
+              <span className="h-0.5 w-7 rounded-full bg-brand-900" aria-hidden="true" />
+              <span className="h-0.5 w-7 rounded-full bg-brand-900" aria-hidden="true" />
             </button>
           </div>
         </div>

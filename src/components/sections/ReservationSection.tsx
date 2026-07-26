@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from 'react';
-import { LEGAL_DETAILS } from '../../data/legal';
 
 interface ReservationForm {
   name: string;
@@ -20,11 +19,14 @@ const initialForm: ReservationForm = {
 export function ReservationSection() {
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState('');
-  const [isReady, setIsReady] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [reservationId, setReservationId] = useState('');
 
-  const minDateTime = new Date(Date.now() - new Date().getTimezoneOffset() * 60_000)
-    .toISOString()
-    .slice(0, 16);
+  const [minDateTime] = useState(() =>
+    new Date(Date.now() - new Date().getTimezoneOffset() * 60_000)
+      .toISOString()
+      .slice(0, 16),
+  );
 
   const handleGuestsChange = (value: string) => {
     if (/^\d*$/.test(value)) {
@@ -32,7 +34,7 @@ export function ReservationSection() {
     }
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
 
@@ -62,7 +64,39 @@ export function ReservationSection() {
       return;
     }
 
-    setIsReady(true);
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('/api/reservations/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.name,
+          phone: form.phone,
+          guests,
+          dateTime: form.dateTime,
+          consent: form.consent,
+        }),
+      });
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(result?.error || 'Не удалось отправить заявку. Попробуйте позже.');
+      }
+
+      setReservationId(result?.reservationId || '');
+      setForm(initialForm);
+    } catch (submitError) {
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : 'Не удалось отправить заявку. Попробуйте позже.',
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -78,29 +112,26 @@ export function ReservationSection() {
             </p>
           </div>
 
-          {isReady ? (
+          {reservationId ? (
             <div className="rounded-2xl bg-brand-100 p-8 text-center">
               <h3 className="font-heading text-2xl font-semibold text-brand-900">
-                Данные заполнены
+                Заявка отправлена
               </h3>
               <p className="mt-3 text-brand-700">
-                Для подтверждения бронирования позвоните в ресторан:
+                Ресторан получил ваши данные. Мы позвоним вам, чтобы подтвердить бронирование.
               </p>
-              <a
-                href={LEGAL_DETAILS.phoneHref}
-                className="mt-5 inline-flex rounded-lg bg-brand-900 px-6 py-3 font-heading font-semibold text-brand-50"
-              >
-                {LEGAL_DETAILS.phone}
-              </a>
+              <p className="mt-3 text-sm text-brand-600">
+                Номер заявки: <strong className="text-brand-900">{reservationId}</strong>
+              </p>
               <button
                 type="button"
                 onClick={() => {
                   setForm(initialForm);
-                  setIsReady(false);
+                  setReservationId('');
                 }}
-                className="mt-4 block w-full text-sm font-semibold text-brand-700 underline"
+                className="mt-5 block w-full text-sm font-semibold text-brand-700 underline"
               >
-                Заполнить заново
+                Отправить ещё одну заявку
               </button>
             </div>
           ) : (
@@ -196,9 +227,10 @@ export function ReservationSection() {
 
               <button
                 type="submit"
-                className="mx-auto flex h-14 w-full max-w-sm items-center justify-center whitespace-nowrap rounded-lg bg-brand-900 px-6 font-heading text-lg font-semibold text-brand-50 transition-colors hover:bg-brand-800"
+                disabled={isSubmitting}
+                className="mx-auto flex h-14 w-full max-w-sm items-center justify-center whitespace-nowrap rounded-lg bg-brand-900 px-6 font-heading text-lg font-semibold text-brand-50 transition-colors hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Забронировать
+                {isSubmitting ? 'Отправляем…' : 'Забронировать'}
               </button>
             </form>
           )}

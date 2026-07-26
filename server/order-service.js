@@ -159,6 +159,86 @@ export function validateOrderPayload(payload) {
   };
 }
 
+function getRestaurantDateTimeParts(value = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: process.env.ORDER_TIME_ZONE || 'Asia/Yekaterinburg',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(value);
+  const getPart = (type) => parts.find((part) => part.type === type)?.value || '';
+
+  return {
+    year: getPart('year'),
+    month: getPart('month'),
+    day: getPart('day'),
+    hour: getPart('hour'),
+    minute: getPart('minute'),
+  };
+}
+
+function validateLocalDateTime(value) {
+  const dateTime = cleanText(value, 'дата и время', { min: 16, max: 16 });
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/u.exec(dateTime);
+
+  if (!match) {
+    throw new OrderRequestError(400, 'Укажите корректные дату и время');
+  }
+
+  const [, year, month, day, hour, minute] = match;
+  const numeric = [year, month, day, hour, minute].map(Number);
+  const [numericYear, numericMonth, numericDay, numericHour, numericMinute] = numeric;
+  const calendarDate = new Date(
+    Date.UTC(numericYear, numericMonth - 1, numericDay, numericHour, numericMinute),
+  );
+
+  if (
+    calendarDate.getUTCFullYear() !== numericYear ||
+    calendarDate.getUTCMonth() !== numericMonth - 1 ||
+    calendarDate.getUTCDate() !== numericDay ||
+    numericHour > 23 ||
+    numericMinute > 59
+  ) {
+    throw new OrderRequestError(400, 'Укажите корректные дату и время');
+  }
+
+  const now = getRestaurantDateTimeParts();
+  const currentRestaurantMinute =
+    `${now.year}-${now.month}-${now.day}T${now.hour}:${now.minute}`;
+
+  if (dateTime <= currentRestaurantMinute) {
+    throw new OrderRequestError(400, 'Выберите будущие дату и время');
+  }
+
+  return dateTime;
+}
+
+export function validateReservationPayload(payload) {
+  if (!isPlainObject(payload)) {
+    throw new OrderRequestError(400, 'Некорректные данные бронирования');
+  }
+
+  if (payload.consent !== true) {
+    throw new OrderRequestError(400, 'Необходимо согласие на обработку данных');
+  }
+
+  if (!Number.isInteger(payload.guests) || payload.guests < 1 || payload.guests > 30) {
+    throw new OrderRequestError(400, 'Количество человек должно быть целым числом от 1 до 30');
+  }
+
+  return {
+    name: cleanText(payload.name, 'имя', { min: 2, max: 80 }),
+    phone: cleanPhone(payload.phone),
+    guests: payload.guests,
+    dateTime: validateLocalDateTime(payload.dateTime),
+    reservationId: crypto.randomUUID(),
+    createdAt: new Date(),
+  };
+}
+
 function parseAllowedOrigins() {
   return (process.env.ALLOWED_ORIGINS || '')
     .split(',')
@@ -291,6 +371,16 @@ function formatDate(value) {
     timeStyle: 'short',
     timeZone: process.env.ORDER_TIME_ZONE || 'Asia/Yekaterinburg',
   }).format(value);
+}
+
+function formatReservationDateTime(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/u.exec(value);
+  if (!match) {
+    return value;
+  }
+
+  const [, year, month, day, hour, minute] = match;
+  return `${day}.${month}.${year} в ${hour}:${minute}`;
 }
 
 function createItemsHtml(items) {
@@ -463,6 +553,77 @@ async function sendOrderEmails(order) {
   }
 }
 
+function createReservationAdminEmail(reservation) {
+  const formattedDateTime = formatReservationDateTime(reservation.dateTime);
+
+  return {
+    subject: `Новая бронь Кинкали · ${reservation.reservationId.slice(0, 8)}`,
+    html: `<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Новая заявка на бронирование</title>
+  </head>
+  <body style="margin:0;padding:0;background:#f3f1eb;font-family:Arial,sans-serif;color:#302f2d">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f3f1eb;padding:24px 12px">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:620px;background:#fff;border:1px solid #d2cccc;border-radius:20px;overflow:hidden">
+            <tr>
+              <td style="padding:30px;background:#302f2d;color:#f5f3ed;text-align:center">
+                <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#c4c4bc">Ресторан «Кинкали»</div>
+                <h1 style="margin:10px 0 0;font-size:28px;line-height:1.25">Новая заявка на столик</h1>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:28px">
+                <p style="margin:0 0 20px;line-height:1.6;color:#7c7c74">Позвоните гостю, чтобы подтвердить бронирование.</p>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">
+                  <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Имя</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${escapeHtml(reservation.name)}</strong></td></tr>
+                  <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Телефон</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${escapeHtml(reservation.phone)}</strong></td></tr>
+                  <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Гостей</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${reservation.guests}</strong></td></tr>
+                  <tr><td style="padding:12px;color:#7c7c74">Дата и время</td><td align="right" style="padding:12px"><strong>${escapeHtml(formattedDateTime)}</strong></td></tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:18px 28px;background:#dcdcd4;color:#7c7c74;font-size:12px;text-align:center">
+                Номер заявки: ${escapeHtml(reservation.reservationId)} · Отправлено: ${escapeHtml(formatDate(reservation.createdAt))}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>`,
+    text: `Новая заявка на бронирование
+
+Имя: ${reservation.name}
+Телефон: ${reservation.phone}
+Количество гостей: ${reservation.guests}
+Дата и время: ${formattedDateTime}
+Номер заявки: ${reservation.reservationId}
+Отправлено: ${formatDate(reservation.createdAt)}
+
+Позвоните гостю, чтобы подтвердить бронирование.`,
+  };
+}
+
+async function sendReservationEmail(reservation) {
+  const adminEmail = getRequiredEnvironmentValue('ADMIN_EMAIL');
+  const fromAddress = getRequiredEnvironmentValue('SMTP_FROM');
+  const fromName = process.env.SMTP_FROM_NAME?.trim() || 'Ресторан Кинкали';
+  const transporter = getTransporter();
+
+  await transporter.sendMail({
+    from: { name: fromName, address: fromAddress },
+    to: adminEmail,
+    ...createReservationAdminEmail(reservation),
+  });
+}
+
 export function createSecurityHeaders() {
   return {
     'Cache-Control': 'no-store',
@@ -522,6 +683,55 @@ export async function processOrderRequest({ method, headers, body, ipAddress }) 
   };
 }
 
+export async function processReservationRequest({ method, headers, body, ipAddress }) {
+  if (method === 'OPTIONS') {
+    const origin = headers.origin;
+    const host = headers.host;
+    if (!isRequestOriginAllowed(origin, host)) {
+      throw new OrderRequestError(403, 'Источник запроса не разрешён');
+    }
+    return { status: 204, body: null, origin };
+  }
+
+  if (method !== 'POST') {
+    throw new OrderRequestError(405, 'Метод не поддерживается');
+  }
+
+  const contentLength = Number.parseInt(headers['content-length'] || '0', 10);
+  if (Number.isFinite(contentLength) && contentLength > MAX_BODY_BYTES) {
+    throw new OrderRequestError(413, 'Заявка слишком большая');
+  }
+
+  if (!String(headers['content-type'] || '').toLowerCase().startsWith('application/json')) {
+    throw new OrderRequestError(415, 'Ожидается JSON');
+  }
+
+  const origin = headers.origin;
+  const host = headers.host;
+  if (!isRequestOriginAllowed(origin, host)) {
+    throw new OrderRequestError(403, 'Источник запроса не разрешён');
+  }
+
+  const fetchSite = headers['sec-fetch-site'];
+  if (fetchSite && !['same-origin', 'same-site', 'none'].includes(fetchSite)) {
+    throw new OrderRequestError(403, 'Межсайтовый запрос отклонён');
+  }
+
+  enforceRateLimit(ipAddress);
+  const reservation = validateReservationPayload(body);
+  await sendReservationEmail(reservation);
+
+  return {
+    status: 200,
+    origin,
+    body: {
+      success: true,
+      reservationId: reservation.reservationId,
+      message: 'Заявка на бронирование отправлена',
+    },
+  };
+}
+
 export function getPublicError(error) {
   if (error instanceof OrderRequestError) {
     return {
@@ -543,5 +753,29 @@ export function getPublicError(error) {
     status: 503,
     headers: {},
     body: { success: false, error: 'Не удалось отправить заказ. Попробуйте позже.' },
+  };
+}
+
+export function getPublicReservationError(error) {
+  if (error instanceof OrderRequestError) {
+    return {
+      status: error.status,
+      headers:
+        error.retryAfterSeconds !== undefined
+          ? { 'Retry-After': String(error.retryAfterSeconds) }
+          : {},
+      body: { success: false, error: error.publicMessage },
+    };
+  }
+
+  console.error('Reservation email delivery failed', {
+    name: error instanceof Error ? error.name : 'UnknownError',
+    message: error instanceof Error ? error.message : 'Unknown error',
+  });
+
+  return {
+    status: 503,
+    headers: {},
+    body: { success: false, error: 'Не удалось отправить заявку. Попробуйте позже.' },
   };
 }

@@ -3,7 +3,9 @@ import dotenv from 'dotenv';
 import {
   createSecurityHeaders,
   getPublicError,
+  getPublicReservationError,
   processOrderRequest,
+  processReservationRequest,
 } from './server/order-service.js';
 
 dotenv.config();
@@ -45,6 +47,34 @@ app.all('/api/orders/send-email', async (request, response) => {
     return response.status(result.status).json(result.body);
   } catch (error) {
     const publicError = getPublicError(error);
+    for (const [name, value] of Object.entries(publicError.headers)) {
+      response.setHeader(name, value);
+    }
+    return response.status(publicError.status).json(publicError.body);
+  }
+});
+
+app.all('/api/reservations/send-email', async (request, response) => {
+  try {
+    const result = await processReservationRequest({
+      method: request.method,
+      headers: request.headers,
+      body: request.body,
+      ipAddress: request.ip || request.socket.remoteAddress || 'unknown',
+    });
+
+    if (result.origin) {
+      response.setHeader('Access-Control-Allow-Origin', result.origin);
+      response.setHeader('Vary', 'Origin');
+    }
+    if (request.method === 'OPTIONS') {
+      response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+      response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      return response.status(204).end();
+    }
+    return response.status(result.status).json(result.body);
+  } catch (error) {
+    const publicError = getPublicReservationError(error);
     for (const [name, value] of Object.entries(publicError.headers)) {
       response.setHeader(name, value);
     }
