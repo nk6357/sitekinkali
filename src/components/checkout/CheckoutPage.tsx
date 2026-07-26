@@ -14,6 +14,7 @@ export interface CheckoutFormData {
   name: string;
   phone: string;
   email: string;
+  orderFormat: 'В зале' | 'С собой';
   comment: string;
   consent: boolean;
 }
@@ -37,6 +38,7 @@ export function CheckoutPage({ onClose }: CheckoutPageProps) {
     name: '',
     phone: '',
     email: '',
+    orderFormat: 'В зале',
     comment: '',
     consent: false,
   });
@@ -111,6 +113,7 @@ export function CheckoutPage({ onClose }: CheckoutPageProps) {
         totalPrice,
         totalItems,
         pickupLocation: 'Самовывоз Белинского, 6Б',
+        orderFormat: formData.orderFormat,
         paymentMethod,
         comment: formData.comment || 'Как можно скорее',
         timestamp: new Date().toISOString(),
@@ -273,6 +276,28 @@ export function CheckoutPage({ onClose }: CheckoutPageProps) {
             <div className="bg-brand-50 border-2 border-brand-200 rounded-lg px-4 py-3 text-brand-900 font-body">
               Самовывоз Белинского, 6Б
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3" role="group" aria-label="Формат заказа">
+            {(['В зале', 'С собой'] as const).map((option) => {
+              const isSelected = formData.orderFormat === option;
+
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  aria-pressed={isSelected}
+                  onClick={() => handleInputChange('orderFormat', option)}
+                  className={`w-full min-w-0 rounded-lg px-4 py-3 font-heading font-semibold whitespace-nowrap transition-colors ${
+                    isSelected
+                      ? 'bg-brand-900 text-brand-50'
+                      : 'bg-brand-100 text-brand-900 hover:bg-brand-200'
+                  }`}
+                >
+                  {option}
+                </button>
+              );
+            })}
           </div>
 
           {/* Payment Method - Non-editable */}
