@@ -373,6 +373,11 @@ function formatDate(value) {
   }).format(value);
 }
 
+function createPhoneLink(phone) {
+  const href = `tel:+${String(phone).replace(/\D/g, '')}`;
+  return `<a href="${escapeHtml(href)}" style="color:inherit;text-decoration:underline">${escapeHtml(phone)}</a>`;
+}
+
 function formatReservationDateTime(value) {
   const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/u.exec(value);
   if (!match) {
@@ -470,7 +475,7 @@ function createAdminEmail(order) {
   const customerDetails = `
     <div style="padding:18px;background:#fff;border:1px solid #eadfce;border-radius:14px">
       <div style="margin-bottom:8px"><strong>Имя:</strong> ${escapeHtml(order.customer.name)}</div>
-      <div style="margin-bottom:8px"><strong>Телефон:</strong> ${escapeHtml(order.customer.phone)}</div>
+      <div style="margin-bottom:8px"><strong>Телефон:</strong> ${createPhoneLink(order.customer.phone)}</div>
       <div><strong>Email:</strong> ${escapeHtml(order.customer.email)}</div>
     </div>`;
 
@@ -500,6 +505,11 @@ ${createItemsText(order.items)}
 }
 
 function createCustomerEmail(order) {
+  const customerPhone = `
+    <div style="padding:18px;background:#fff;border:1px solid #eadfce;border-radius:14px">
+      <strong>Телефон:</strong> ${createPhoneLink(order.customer.phone)}
+    </div>`;
+
   return {
     subject: `Ваш заказ в ресторане «Кинкали» · ${order.orderId.slice(0, 8)}`,
     html: createEmailLayout({
@@ -507,7 +517,7 @@ function createCustomerEmail(order) {
       title: 'Спасибо, заказ принят!',
       intro: `Здравствуйте, <strong>${escapeHtml(order.customer.name)}</strong>! Ниже ваш электронный чек. Мы свяжемся с вами, чтобы подтвердить заказ.`,
       order,
-      recipientDetails: '',
+      recipientDetails: customerPhone,
     }),
     text: `Здравствуйте, ${order.customer.name}!
 
@@ -581,7 +591,7 @@ function createReservationAdminEmail(reservation) {
                 <p style="margin:0 0 20px;line-height:1.6;color:#7c7c74">Позвоните гостю, чтобы подтвердить бронирование.</p>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">
                   <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Имя</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${escapeHtml(reservation.name)}</strong></td></tr>
-                  <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Телефон</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${escapeHtml(reservation.phone)}</strong></td></tr>
+                  <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Телефон</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${createPhoneLink(reservation.phone)}</strong></td></tr>
                   <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Гостей</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${reservation.guests}</strong></td></tr>
                   <tr><td style="padding:12px;color:#7c7c74">Дата и время</td><td align="right" style="padding:12px"><strong>${escapeHtml(formattedDateTime)}</strong></td></tr>
                 </table>
