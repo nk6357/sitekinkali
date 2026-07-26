@@ -104,13 +104,20 @@ export function Header() {
             {/* Бургер-меню (видно только на мобильных) */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="flex h-11 w-11 flex-shrink-0 flex-col items-center justify-center gap-1.5 rounded-lg lg:hidden"
+              className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg lg:hidden"
               aria-label={isMobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
               aria-expanded={isMobileMenuOpen}
             >
-              <span className="h-0.5 w-7 rounded-full bg-brand-900" aria-hidden="true" />
-              <span className="h-0.5 w-7 rounded-full bg-brand-900" aria-hidden="true" />
-              <span className="h-0.5 w-7 rounded-full bg-brand-900" aria-hidden="true" />
+              <span
+                className={`flex flex-col items-center justify-center gap-1.5 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                  isMobileMenuOpen ? 'rotate-90' : 'rotate-0'
+                }`}
+                aria-hidden="true"
+              >
+                <span className="h-0.5 w-7 rounded-full bg-brand-900" />
+                <span className="h-0.5 w-7 rounded-full bg-brand-900" />
+                <span className="h-0.5 w-7 rounded-full bg-brand-900" />
+              </span>
             </button>
           </div>
         </div>
