@@ -246,6 +246,24 @@ function parseAllowedOrigins() {
     .filter(Boolean);
 }
 
+function getSiteOrigin(origin, host) {
+  if (origin) {
+    return new URL(origin).origin;
+  }
+
+  if (host) {
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+    return new URL(`${protocol}://${host}`).origin;
+  }
+
+  const [allowedOrigin] = parseAllowedOrigins();
+  if (allowedOrigin) {
+    return new URL(allowedOrigin).origin;
+  }
+
+  throw new Error('Cannot determine the public site origin');
+}
+
 export function isRequestOriginAllowed(origin, host) {
   if (!origin) {
     return process.env.NODE_ENV !== 'production';
@@ -373,8 +391,13 @@ function formatDate(value) {
   }).format(value);
 }
 
-function createPhoneLink(phone) {
-  const href = `tel:+${String(phone).replace(/\D/g, '')}`;
+function createPhoneLink(phone, siteOrigin) {
+  let digits = String(phone).replace(/\D/g, '');
+  if (digits.length === 11 && digits.startsWith('8')) {
+    digits = `7${digits.slice(1)}`;
+  }
+  const normalizedPhone = `+${digits}`;
+  const href = `${siteOrigin}/call#phone=${encodeURIComponent(normalizedPhone)}`;
   return `<a href="${escapeHtml(href)}" style="color:inherit;text-decoration:underline">${escapeHtml(phone)}</a>`;
 }
 
@@ -471,11 +494,11 @@ function createEmailLayout({ eyebrow, title, intro, order, recipientDetails }) {
 </html>`;
 }
 
-function createAdminEmail(order) {
+function createAdminEmail(order, siteOrigin) {
   const customerDetails = `
     <div style="padding:18px;background:#fff;border:1px solid #eadfce;border-radius:14px">
       <div style="margin-bottom:8px"><strong>Имя:</strong> ${escapeHtml(order.customer.name)}</div>
-      <div style="margin-bottom:8px"><strong>Телефон:</strong> ${createPhoneLink(order.customer.phone)}</div>
+      <div style="margin-bottom:8px"><strong>Телефон:</strong> ${createPhoneLink(order.customer.phone, siteOrigin)}</div>
       <div><strong>Email:</strong> ${escapeHtml(order.customer.email)}</div>
     </div>`;
 
@@ -504,10 +527,10 @@ ${createItemsText(order.items)}
   };
 }
 
-function createCustomerEmail(order) {
+function createCustomerEmail(order, siteOrigin) {
   const customerPhone = `
     <div style="padding:18px;background:#fff;border:1px solid #eadfce;border-radius:14px">
-      <strong>Телефон:</strong> ${createPhoneLink(order.customer.phone)}
+      <strong>Телефон:</strong> ${createPhoneLink(order.customer.phone, siteOrigin)}
     </div>`;
 
   return {
@@ -535,13 +558,13 @@ ${createItemsText(order.items)}
   };
 }
 
-async function sendOrderEmails(order) {
+async function sendOrderEmails(order, siteOrigin) {
   const adminEmail = getRequiredEnvironmentValue('ADMIN_EMAIL');
   const fromAddress = getRequiredEnvironmentValue('SMTP_FROM');
   const fromName = process.env.SMTP_FROM_NAME?.trim() || 'Ресторан Кинкали';
   const transporter = getTransporter();
-  const adminMessage = createAdminEmail(order);
-  const customerMessage = createCustomerEmail(order);
+  const adminMessage = createAdminEmail(order, siteOrigin);
+  const customerMessage = createCustomerEmail(order, siteOrigin);
 
   const results = await Promise.allSettled([
     transporter.sendMail({
@@ -563,7 +586,7 @@ async function sendOrderEmails(order) {
   }
 }
 
-function createReservationAdminEmail(reservation) {
+function createReservationAdminEmail(reservation, siteOrigin) {
   const formattedDateTime = formatReservationDateTime(reservation.dateTime);
 
   return {
@@ -591,7 +614,7 @@ function createReservationAdminEmail(reservation) {
                 <p style="margin:0 0 20px;line-height:1.6;color:#7c7c74">Позвоните гостю, чтобы подтвердить бронирование.</p>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">
                   <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Имя</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${escapeHtml(reservation.name)}</strong></td></tr>
-                  <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Телефон</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${createPhoneLink(reservation.phone)}</strong></td></tr>
+                  <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Телефон</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${createPhoneLink(reservation.phone, siteOrigin)}</strong></td></tr>
                   <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Гостей</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${reservation.guests}</strong></td></tr>
                   <tr><td style="padding:12px;color:#7c7c74">Дата и время</td><td align="right" style="padding:12px"><strong>${escapeHtml(formattedDateTime)}</strong></td></tr>
                 </table>
@@ -621,7 +644,7 @@ function createReservationAdminEmail(reservation) {
   };
 }
 
-async function sendReservationEmail(reservation) {
+async function sendReservationEmail(reservation, siteOrigin) {
   const adminEmail = getRequiredEnvironmentValue('ADMIN_EMAIL');
   const fromAddress = getRequiredEnvironmentValue('SMTP_FROM');
   const fromName = process.env.SMTP_FROM_NAME?.trim() || 'Ресторан Кинкали';
@@ -630,7 +653,7 @@ async function sendReservationEmail(reservation) {
   await transporter.sendMail({
     from: { name: fromName, address: fromAddress },
     to: adminEmail,
-    ...createReservationAdminEmail(reservation),
+    ...createReservationAdminEmail(reservation, siteOrigin),
   });
 }
 
@@ -680,7 +703,7 @@ export async function processOrderRequest({ method, headers, body, ipAddress }) 
 
   enforceRateLimit(ipAddress);
   const order = validateOrderPayload(body);
-  await sendOrderEmails(order);
+  await sendOrderEmails(order, getSiteOrigin(origin, host));
 
   return {
     status: 200,
@@ -729,7 +752,7 @@ export async function processReservationRequest({ method, headers, body, ipAddre
 
   enforceRateLimit(ipAddress);
   const reservation = validateReservationPayload(body);
-  await sendReservationEmail(reservation);
+  await sendReservationEmail(reservation, getSiteOrigin(origin, host));
 
   return {
     status: 200,
