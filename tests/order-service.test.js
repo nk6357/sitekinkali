@@ -78,13 +78,13 @@ test('accepts a valid table reservation with an integer guest count', () => {
     name: 'Анна',
     phone: '+7 (999) 123-45-67',
     guests: 4,
-    dateTime: '2099-12-31T20:00',
+    dateTime: '31 декабря в 20:00',
     offerAccepted: true,
     personalDataConsent: true,
   });
 
   assert.equal(reservation.guests, 4);
-  assert.equal(reservation.dateTime, '2099-12-31T20:00');
+  assert.equal(reservation.dateTime, '31 декабря в 20:00');
 });
 
 test('rejects a fractional guest count in a reservation', () => {
