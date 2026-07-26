@@ -26,12 +26,6 @@ export function ReservationSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reservationId, setReservationId] = useState('');
 
-  const [minDateTime] = useState(() =>
-    new Date(Date.now() - new Date().getTimezoneOffset() * 60_000)
-      .toISOString()
-      .slice(0, 16),
-  );
-
   const handleGuestsChange = (value: string) => {
     if (/^\d*$/.test(value)) {
       setForm((current) => ({ ...current, guests: value }));
@@ -59,8 +53,8 @@ export function ReservationSection() {
       return;
     }
 
-    if (!form.dateTime || new Date(form.dateTime).getTime() < Date.now()) {
-      setError('Выберите будущие дату и время.');
+    if (form.dateTime.trim().length < 2) {
+      setError('Укажите желаемые дату и время.');
       return;
     }
 
@@ -221,12 +215,13 @@ export function ReservationSection() {
                 <label className="space-y-2">
                   <span className="font-heading font-semibold text-brand-900">Дата и время *</span>
                   <input
-                    type="datetime-local"
+                    type="text"
                     value={form.dateTime}
-                    min={minDateTime}
                     onChange={(event) =>
                       setForm((current) => ({ ...current, dateTime: event.target.value }))
                     }
+                    placeholder="Например: 27 июля в 19:00"
+                    maxLength={120}
                     className="h-14 w-full rounded-lg border-2 border-brand-200 bg-brand-50 px-4 outline-none transition-colors focus:border-brand-900"
                     required
                   />
