@@ -63,6 +63,10 @@ function loadMenuItem(categoryPath, itemName, category) {
   const price = parseInt(lines[0].trim(), 10);
   const name = lines[1].trim();
   const description = lines.length > 2 ? lines[2].trim() : '';
+  const parsedSpiceLevel = lines.length > 3 ? parseInt(lines[3].trim(), 10) : 0;
+  const spiceLevel = Number.isInteger(parsedSpiceLevel) && parsedSpiceLevel >= 1 && parsedSpiceLevel <= 3
+    ? parsedSpiceLevel
+    : 0;
 
   if (isNaN(price)) {
     console.warn(`Warning: Invalid price in ${itemName}`);
@@ -84,6 +88,7 @@ function loadMenuItem(categoryPath, itemName, category) {
     category: JSON.stringify(category),
     image: imageFile ? `"Menu12/${category}/${itemName}/${imageFile}"` : `""`,
     isAvailable: true,
+    spiceLevel,
   };
 }
 
@@ -164,6 +169,7 @@ export const menuItems: MenuItem[] = [
     category: ${item.category},
     image: ${item.image},
     isAvailable: ${item.isAvailable},
+    spiceLevel: ${item.spiceLevel},
   },
 `;
   }

@@ -103,6 +103,7 @@ export async function loadMenuItem(
       category,
       image: imagePath || '',
       isAvailable: true,
+      spiceLevel: 0,
     };
   } catch (error) {
     console.warn(`Failed to load menu item ${itemName}:`, error);

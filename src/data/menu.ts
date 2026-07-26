@@ -22,7 +22,7 @@ export const MENU_CATEGORIES: MenuCategory[] = [
 /**
  * База блюд ресторана.
  * Автоматически генерируется из структуры Menu12/
- * Генерировано: 2026-07-26T23:04:24.145Z
+ * Генерировано: 2026-07-26T23:38:38.232Z
  */
 export const menuItems: MenuItem[] = [
   {
@@ -34,6 +34,7 @@ export const menuItems: MenuItem[] = [
     category: "Холодные закуски",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '2',
@@ -44,6 +45,7 @@ export const menuItems: MenuItem[] = [
     category: "Холодные закуски",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '3',
@@ -54,6 +56,7 @@ export const menuItems: MenuItem[] = [
     category: "Холодные закуски",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '4',
@@ -64,6 +67,7 @@ export const menuItems: MenuItem[] = [
     category: "Холодные закуски",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '5',
@@ -74,6 +78,7 @@ export const menuItems: MenuItem[] = [
     category: "Холодные закуски",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '6',
@@ -84,6 +89,7 @@ export const menuItems: MenuItem[] = [
     category: "Холодные закуски",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '7',
@@ -94,6 +100,7 @@ export const menuItems: MenuItem[] = [
     category: "Холодные закуски",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '8',
@@ -104,6 +111,7 @@ export const menuItems: MenuItem[] = [
     category: "Холодные закуски",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '9',
@@ -114,6 +122,7 @@ export const menuItems: MenuItem[] = [
     category: "Холодные закуски",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '10',
@@ -124,6 +133,7 @@ export const menuItems: MenuItem[] = [
     category: "Холодные закуски",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '11',
@@ -134,6 +144,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие закуски",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '12',
@@ -144,6 +155,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие закуски",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '13',
@@ -154,6 +166,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие закуски",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '14',
@@ -164,6 +177,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие закуски",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '15',
@@ -174,6 +188,7 @@ export const menuItems: MenuItem[] = [
     category: "Салаты",
     image: "",
     isAvailable: true,
+    spiceLevel: 2,
   },
   {
     id: '16',
@@ -184,6 +199,7 @@ export const menuItems: MenuItem[] = [
     category: "Салаты",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '17',
@@ -194,6 +210,7 @@ export const menuItems: MenuItem[] = [
     category: "Салаты",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '18',
@@ -204,6 +221,7 @@ export const menuItems: MenuItem[] = [
     category: "Салаты",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '19',
@@ -214,6 +232,7 @@ export const menuItems: MenuItem[] = [
     category: "Салаты",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '20',
@@ -224,6 +243,7 @@ export const menuItems: MenuItem[] = [
     category: "Салаты",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '21',
@@ -234,6 +254,7 @@ export const menuItems: MenuItem[] = [
     category: "Салаты",
     image: "",
     isAvailable: true,
+    spiceLevel: 2,
   },
   {
     id: '22',
@@ -244,6 +265,7 @@ export const menuItems: MenuItem[] = [
     category: "Салаты",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '23',
@@ -254,6 +276,7 @@ export const menuItems: MenuItem[] = [
     category: "Супы",
     image: "",
     isAvailable: true,
+    spiceLevel: 2,
   },
   {
     id: '24',
@@ -264,6 +287,7 @@ export const menuItems: MenuItem[] = [
     category: "Супы",
     image: "",
     isAvailable: true,
+    spiceLevel: 2,
   },
   {
     id: '25',
@@ -274,6 +298,7 @@ export const menuItems: MenuItem[] = [
     category: "Супы",
     image: "",
     isAvailable: true,
+    spiceLevel: 3,
   },
   {
     id: '26',
@@ -284,6 +309,7 @@ export const menuItems: MenuItem[] = [
     category: "Супы",
     image: "",
     isAvailable: true,
+    spiceLevel: 3,
   },
   {
     id: '27',
@@ -294,6 +320,7 @@ export const menuItems: MenuItem[] = [
     category: "Супы",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '28',
@@ -304,6 +331,7 @@ export const menuItems: MenuItem[] = [
     category: "Супы",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '29',
@@ -314,6 +342,7 @@ export const menuItems: MenuItem[] = [
     category: "Фирменные \"Кинкали\"",
     image: "",
     isAvailable: true,
+    spiceLevel: 1,
   },
   {
     id: '30',
@@ -324,6 +353,7 @@ export const menuItems: MenuItem[] = [
     category: "Фирменные \"Кинкали\"",
     image: "",
     isAvailable: true,
+    spiceLevel: 1,
   },
   {
     id: '31',
@@ -334,6 +364,7 @@ export const menuItems: MenuItem[] = [
     category: "Хинкали",
     image: "",
     isAvailable: true,
+    spiceLevel: 1,
   },
   {
     id: '32',
@@ -344,6 +375,7 @@ export const menuItems: MenuItem[] = [
     category: "Хинкали",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '33',
@@ -354,6 +386,7 @@ export const menuItems: MenuItem[] = [
     category: "Хинкали",
     image: "",
     isAvailable: true,
+    spiceLevel: 1,
   },
   {
     id: '34',
@@ -364,6 +397,7 @@ export const menuItems: MenuItem[] = [
     category: "Хинкали",
     image: "",
     isAvailable: true,
+    spiceLevel: 1,
   },
   {
     id: '35',
@@ -374,6 +408,7 @@ export const menuItems: MenuItem[] = [
     category: "Хинкали",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '36',
@@ -384,6 +419,7 @@ export const menuItems: MenuItem[] = [
     category: "Хинкали",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '37',
@@ -394,6 +430,7 @@ export const menuItems: MenuItem[] = [
     category: "Хинкали",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '38',
@@ -404,6 +441,7 @@ export const menuItems: MenuItem[] = [
     category: "Хинкали",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '39',
@@ -414,6 +452,7 @@ export const menuItems: MenuItem[] = [
     category: "Хинкали",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '40',
@@ -424,6 +463,7 @@ export const menuItems: MenuItem[] = [
     category: "Выпечка",
     image: "",
     isAvailable: true,
+    spiceLevel: 1,
   },
   {
     id: '41',
@@ -434,6 +474,7 @@ export const menuItems: MenuItem[] = [
     category: "Выпечка",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '42',
@@ -444,6 +485,7 @@ export const menuItems: MenuItem[] = [
     category: "Выпечка",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '43',
@@ -454,6 +496,7 @@ export const menuItems: MenuItem[] = [
     category: "Выпечка",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '44',
@@ -464,6 +507,7 @@ export const menuItems: MenuItem[] = [
     category: "Выпечка",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '45',
@@ -474,6 +518,7 @@ export const menuItems: MenuItem[] = [
     category: "Выпечка",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '46',
@@ -484,6 +529,7 @@ export const menuItems: MenuItem[] = [
     category: "Блюда на гриле",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '47',
@@ -494,6 +540,7 @@ export const menuItems: MenuItem[] = [
     category: "Блюда на гриле",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '48',
@@ -504,6 +551,7 @@ export const menuItems: MenuItem[] = [
     category: "Блюда на гриле",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '49',
@@ -514,6 +562,7 @@ export const menuItems: MenuItem[] = [
     category: "Блюда на гриле",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '50',
@@ -524,6 +573,7 @@ export const menuItems: MenuItem[] = [
     category: "Блюда на гриле",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '51',
@@ -534,6 +584,7 @@ export const menuItems: MenuItem[] = [
     category: "Блюда на гриле",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '52',
@@ -544,6 +595,7 @@ export const menuItems: MenuItem[] = [
     category: "Блюда на гриле",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '53',
@@ -554,6 +606,7 @@ export const menuItems: MenuItem[] = [
     category: "Блюда на гриле",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '54',
@@ -564,6 +617,7 @@ export const menuItems: MenuItem[] = [
     category: "Блюда на гриле",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '55',
@@ -574,6 +628,7 @@ export const menuItems: MenuItem[] = [
     category: "Блюда на гриле",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '56',
@@ -584,6 +639,7 @@ export const menuItems: MenuItem[] = [
     category: "Блюда на гриле",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '57',
@@ -594,6 +650,7 @@ export const menuItems: MenuItem[] = [
     category: "Блюда на гриле",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '58',
@@ -604,6 +661,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие блюда",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '59',
@@ -614,6 +672,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие блюда",
     image: "",
     isAvailable: true,
+    spiceLevel: 3,
   },
   {
     id: '60',
@@ -624,6 +683,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие блюда",
     image: "",
     isAvailable: true,
+    spiceLevel: 1,
   },
   {
     id: '61',
@@ -634,6 +694,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие блюда",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '62',
@@ -644,6 +705,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие блюда",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '63',
@@ -654,6 +716,7 @@ export const menuItems: MenuItem[] = [
     category: "Гарниры",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '64',
@@ -664,6 +727,7 @@ export const menuItems: MenuItem[] = [
     category: "Гарниры",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '65',
@@ -674,6 +738,7 @@ export const menuItems: MenuItem[] = [
     category: "Гарниры",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '66',
@@ -684,6 +749,7 @@ export const menuItems: MenuItem[] = [
     category: "Гарниры",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '68',
@@ -694,6 +760,7 @@ export const menuItems: MenuItem[] = [
     category: "Гарниры",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '69',
@@ -704,6 +771,7 @@ export const menuItems: MenuItem[] = [
     category: "Соусы",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '70',
@@ -714,6 +782,7 @@ export const menuItems: MenuItem[] = [
     category: "Соусы",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '71',
@@ -724,6 +793,7 @@ export const menuItems: MenuItem[] = [
     category: "Соусы",
     image: "",
     isAvailable: true,
+    spiceLevel: 2,
   },
   {
     id: '72',
@@ -734,6 +804,7 @@ export const menuItems: MenuItem[] = [
     category: "Соусы",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '73',
@@ -744,6 +815,7 @@ export const menuItems: MenuItem[] = [
     category: "Соусы",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '74',
@@ -754,6 +826,7 @@ export const menuItems: MenuItem[] = [
     category: "Соусы",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '75',
@@ -764,6 +837,7 @@ export const menuItems: MenuItem[] = [
     category: "Соусы",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '76',
@@ -774,6 +848,7 @@ export const menuItems: MenuItem[] = [
     category: "Соусы",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '77',
@@ -784,6 +859,7 @@ export const menuItems: MenuItem[] = [
     category: "Десерты",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '78',
@@ -794,6 +870,7 @@ export const menuItems: MenuItem[] = [
     category: "Десерты",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '79',
@@ -804,6 +881,7 @@ export const menuItems: MenuItem[] = [
     category: "Десерты",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '80',
@@ -814,6 +892,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '81',
@@ -824,6 +903,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '82',
@@ -834,6 +914,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '83',
@@ -844,6 +925,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '84',
@@ -854,6 +936,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '85',
@@ -864,6 +947,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '86',
@@ -874,6 +958,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '87',
@@ -884,6 +969,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '88',
@@ -894,6 +980,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '89',
@@ -904,16 +991,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие напитки",
     image: "",
     isAvailable: true,
-  },
-  {
-    id: '90',
-    name: "IRISH COFFEE",
-    description: "КОФЕ, СЛИВКИ, ИРЛАНДСКИЙ ВИСКИ / 180МЛ",
-    weight: '',
-    price: 590,
-    category: "Горячие напитки",
-    image: "",
-    isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '91',
@@ -924,6 +1002,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '92',
@@ -934,6 +1013,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '93',
@@ -944,6 +1024,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '94',
@@ -954,6 +1035,7 @@ export const menuItems: MenuItem[] = [
     category: "Горячие напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '99',
@@ -964,6 +1046,7 @@ export const menuItems: MenuItem[] = [
     category: "Безалкогольные напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '101',
@@ -974,6 +1057,7 @@ export const menuItems: MenuItem[] = [
     category: "Безалкогольные напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '103',
@@ -984,6 +1068,7 @@ export const menuItems: MenuItem[] = [
     category: "Безалкогольные напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
   {
     id: '104',
@@ -994,6 +1079,7 @@ export const menuItems: MenuItem[] = [
     category: "Безалкогольные напитки",
     image: "",
     isAvailable: true,
+    spiceLevel: 0,
   },
 ];
 

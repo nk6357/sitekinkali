@@ -50,6 +50,7 @@ export interface MenuItem {
   category: MenuCategory;
   image: string;
   isAvailable: boolean;
+  spiceLevel: number;
 }
 
 /** Элемент корзины */

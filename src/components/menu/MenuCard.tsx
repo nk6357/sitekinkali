@@ -62,6 +62,22 @@ export function MenuCard({ item }: MenuCardProps) {
 
       {/* Фото блюда */}
       <div className="relative aspect-[4/3] overflow-hidden bg-brand-100">
+        {item.spiceLevel > 0 && (
+          <div
+            className="pointer-events-none absolute right-2 top-2 z-10 flex items-center gap-0.5"
+            aria-label={`Острота: ${item.spiceLevel}`}
+          >
+            {Array.from({ length: item.spiceLevel }, (_, index) => (
+              <img
+                key={index}
+                src="/icons/chili.png"
+                alt=""
+                aria-hidden="true"
+                className="h-5 w-5 object-contain drop-shadow-[0_1px_2px_rgba(255,255,255,0.95)]"
+              />
+            ))}
+          </div>
+        )}
         <img
           src={imageSrc}
           alt={item.name}
