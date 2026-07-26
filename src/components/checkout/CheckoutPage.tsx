@@ -244,6 +244,7 @@ export function CheckoutPage({ onClose }: CheckoutPageProps) {
             value={formData.phone}
             onChange={(value: string | boolean) => handleInputChange('phone', value)}
             placeholder="+7 (999) 123-45-67"
+            maxLength={18}
             required
             error={errors.phone}
           />
