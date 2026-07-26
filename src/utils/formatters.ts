@@ -12,54 +12,31 @@ export function formatPrice(price: number): string {
   }).format(price);
 }
 
-/** Форматировать телефон +7 (999) 999-99-99 */
-export function formatPhone(phone: string): string {
-  // Удалить все нецифровые символы
-  const digits = phone.replace(/\D/g, '');
-  
-  // Привести к стандартной форме: 11 цифр, начинающихся с 7
-  let normalizedDigits: string;
-  
-  if (digits.length === 0) {
-    return '';
-  }
-  
-  // Если уже начинается с 7 и ровно 11 цифр
-  if (digits.startsWith('7') && digits.length === 11) {
-    normalizedDigits = digits.slice(1); // Берем 10 цифр без начальной 7
-  }
-  // Если начинается с 8 (вариант записи внутри России)
-  else if (digits.startsWith('8') && digits.length === 11) {
-    normalizedDigits = digits.slice(1); // Берем 10 цифр без начальной 8
-  }
-  // Если ровно 10 цифр
-  else if (digits.length === 10) {
-    normalizedDigits = digits;
-  }
-  // Если 11 цифр и не начинается с 7 или 8
-  else if (digits.length === 11) {
-    normalizedDigits = digits.slice(1);
-  }
-  // Во всех остальных случаях паддируем или обрезаем до 10 цифр
-  else {
-    normalizedDigits = digits.padStart(10, '0').slice(-10);
-  }
-  
-  // Форматировать: +7 (XXX) XXX-XX-XX
-  return `+7 (${normalizedDigits.slice(0, 3)}) ${normalizedDigits.slice(3, 6)}-${normalizedDigits.slice(6, 8)}-${normalizedDigits.slice(8, 10)}`;
-}
+/** Форматировать телефон по маске +7 (999) 123-45-67 */
+export function formatPhone(value: string): string {
+  const cleaned = value.replace(/[^\d+]/g, '');
 
-/** Очистить и валидировать телефон (вернуть только цифры с +7 в начале) */
-export function cleanPhone(phone: string): string {
-  const digits = phone.replace(/\D/g, '');
-  let cleanedDigits = digits.startsWith('7') ? digits : `7${digits}`;
-  
-  // Убедиться, что это 11 цифр (7 + 10 цифр номера)
-  if (cleanedDigits.length !== 11) {
-    cleanedDigits = cleanedDigits.slice(0, 11);
+  let formatted = cleaned;
+  if (formatted.startsWith('8')) {
+    formatted = `+7${formatted.slice(1)}`;
+  } else if (formatted.startsWith('7') && !formatted.startsWith('+')) {
+    formatted = `+${formatted}`;
+  } else if (!formatted.startsWith('+7') && formatted.length > 0) {
+    formatted = `+7${formatted}`;
   }
-  
-  return `+${cleanedDigits}`;
+
+  const match = formatted.match(/^\+?7(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})$/);
+  if (match) {
+    const [, group1, group2, group3, group4] = match;
+    let result = '+7';
+    if (group1) result += ` (${group1}`;
+    if (group2) result += `) ${group2}`;
+    if (group3) result += `-${group3}`;
+    if (group4) result += `-${group4}`;
+    return result;
+  }
+
+  return formatted;
 }
 
 /** Форматировать дату и время в человекочитаемый формат */
