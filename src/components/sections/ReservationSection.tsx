@@ -58,6 +58,11 @@ export function ReservationSection() {
       return;
     }
 
+    if (form.dateTime.trim().length > 59) {
+      setError('Дата и время должны содержать не более 59 символов.');
+      return;
+    }
+
     if (!form.offerAccepted) {
       setError('Подтвердите принятие условий публичной оферты.');
       return;
