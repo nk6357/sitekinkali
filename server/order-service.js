@@ -221,7 +221,11 @@ export function validateReservationPayload(payload) {
     throw new OrderRequestError(400, 'Некорректные данные бронирования');
   }
 
-  if (payload.consent !== true) {
+  if (payload.offerAccepted !== true) {
+    throw new OrderRequestError(400, 'Необходимо принять условия публичной оферты');
+  }
+
+  if (payload.personalDataConsent !== true) {
     throw new OrderRequestError(400, 'Необходимо согласие на обработку данных');
   }
 
