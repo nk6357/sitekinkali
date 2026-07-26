@@ -6,7 +6,8 @@ interface ReservationForm {
   phone: string;
   guests: string;
   dateTime: string;
-  consent: boolean;
+  offerAccepted: boolean;
+  personalDataConsent: boolean;
 }
 
 const initialForm: ReservationForm = {
@@ -14,7 +15,8 @@ const initialForm: ReservationForm = {
   phone: '',
   guests: '',
   dateTime: '',
-  consent: false,
+  offerAccepted: false,
+  personalDataConsent: false,
 };
 
 export function ReservationSection() {
@@ -60,8 +62,13 @@ export function ReservationSection() {
       return;
     }
 
-    if (!form.consent) {
-      setError('Подтвердите согласие с офертой и политикой конфиденциальности.');
+    if (!form.offerAccepted) {
+      setError('Подтвердите принятие условий публичной оферты.');
+      return;
+    }
+
+    if (!form.personalDataConsent) {
+      setError('Дайте отдельное согласие на обработку персональных данных.');
       return;
     }
 
@@ -78,7 +85,8 @@ export function ReservationSection() {
           phone: form.phone,
           guests,
           dateTime: form.dateTime,
-          consent: form.consent,
+          offerAccepted: form.offerAccepted,
+          personalDataConsent: form.personalDataConsent,
         }),
       });
       const result = await response.json().catch(() => null);
@@ -210,20 +218,46 @@ export function ReservationSection() {
               <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-brand-50 p-4">
                 <input
                   type="checkbox"
-                  checked={form.consent}
+                  checked={form.offerAccepted}
                   onChange={(event) =>
-                    setForm((current) => ({ ...current, consent: event.target.checked }))
+                    setForm((current) => ({ ...current, offerAccepted: event.target.checked }))
                   }
                   className="mt-1 h-5 w-5 flex-shrink-0 accent-brand-900"
                 />
                 <span className="text-sm leading-relaxed text-brand-700">
                   Я принимаю условия{' '}
                   <a href="/offer" target="_blank" rel="noopener noreferrer" className="font-semibold underline">
-                    оферты
+                    публичной оферты
+                  </a>
+                  .
+                </span>
+              </label>
+
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-brand-50 p-4">
+                <input
+                  type="checkbox"
+                  checked={form.personalDataConsent}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      personalDataConsent: event.target.checked,
+                    }))
+                  }
+                  className="mt-1 h-5 w-5 flex-shrink-0 accent-brand-900"
+                />
+                <span className="text-sm leading-relaxed text-brand-700">
+                  Я даю отдельное{' '}
+                  <a
+                    href="/personal-data-consent"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold underline"
+                  >
+                    согласие на обработку персональных данных
                   </a>{' '}
-                  и{' '}
+                  и ознакомлен с{' '}
                   <a href="/privacy" target="_blank" rel="noopener noreferrer" className="font-semibold underline">
-                    политики конфиденциальности
+                    политикой обработки персональных данных
                   </a>
                   .
                 </span>
