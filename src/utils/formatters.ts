@@ -14,7 +14,7 @@ export function formatPrice(price: number): string {
 
 /** Форматировать телефон по маске +7 (999) 123-45-67 */
 export function formatPhone(value: string): string {
-  const cleaned = value.replace(/[^\d+]/g, '');
+  const cleaned = value.replace(/[^\d+]/g, '').replace(/(?!^)\+/g, '');
 
   let formatted = cleaned;
   if (formatted.startsWith('8')) {
