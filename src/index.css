@@ -46,6 +46,70 @@
   }
 }
 
+@layer components {
+  /*
+   * На узких и высоких экранах изображение занимает ограниченную верхнюю часть,
+   * а текст прокручивается ниже. На широких экранах блоки стоят рядом.
+   */
+  .menu-item-modal {
+    width: min(92vw, 72rem);
+    height: min(82vh, 52rem);
+    height: min(82dvh, 52rem);
+    flex-direction: column;
+    border-radius: 1rem;
+  }
+
+  .menu-item-modal__image {
+    width: 100%;
+    height: clamp(10rem, 32vh, 20rem);
+    height: clamp(10rem, 32dvh, 20rem);
+    flex: 0 0 auto;
+  }
+
+  .menu-item-modal__content {
+    width: 100%;
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow-y: auto;
+  }
+
+  @media (min-width: 700px) and (min-aspect-ratio: 4 / 3) {
+    .menu-item-modal {
+      width: min(78vw, 72rem);
+      height: min(78vh, 52rem);
+      height: min(78dvh, 52rem);
+      flex-direction: row;
+    }
+
+    .menu-item-modal__image {
+      width: 55%;
+      height: 100%;
+    }
+
+    .menu-item-modal__content {
+      width: 45%;
+    }
+  }
+
+  @media (min-width: 700px) and (max-height: 520px) {
+    .menu-item-modal {
+      width: min(86vw, 72rem);
+      height: min(88vh, 52rem);
+      height: min(88dvh, 52rem);
+      flex-direction: row;
+    }
+
+    .menu-item-modal__image,
+    .menu-item-modal__content {
+      width: 50%;
+    }
+
+    .menu-item-modal__image {
+      height: 100%;
+    }
+  }
+}
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;

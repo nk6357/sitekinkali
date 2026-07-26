@@ -19,7 +19,7 @@ interface MenuItemModalProps {
 const ANIMATION_DURATION_MS = 350;
 
 /**
- * Полноэкранная карточка блюда с полным текстом и управлением корзиной.
+ * Адаптивная увеличенная карточка блюда с полным текстом и управлением корзиной.
  */
 export function MenuItemModal({
   item,
@@ -96,7 +96,7 @@ export function MenuItemModal({
 
   return createPortal(
     <div
-      className={`fixed inset-0 z-[70] flex bg-brand-900/70 p-0 backdrop-blur-sm transition-opacity duration-[350ms] ease-out md:p-5 ${
+      className={`fixed inset-0 z-[70] flex bg-brand-900/70 p-2 backdrop-blur-sm transition-opacity duration-[350ms] ease-out sm:p-4 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
       onMouseDown={(event) => {
@@ -109,7 +109,7 @@ export function MenuItemModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={`menu-item-title-${item.id}`}
-        className={`relative m-auto flex h-full w-full flex-col overflow-hidden bg-brand-50 shadow-2xl transition-[opacity,transform] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] md:max-h-[calc(100vh-2.5rem)] md:max-w-6xl md:rounded-2xl lg:flex-row ${
+        className={`menu-item-modal relative m-auto flex overflow-hidden bg-brand-50 shadow-2xl transition-[opacity,transform] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
           isVisible
             ? 'translate-y-0 scale-100 opacity-100'
             : 'translate-y-5 scale-[0.97] opacity-0'
@@ -125,7 +125,7 @@ export function MenuItemModal({
           ×
         </button>
 
-        <div className="relative min-h-[34vh] shrink-0 overflow-hidden bg-brand-100 sm:min-h-[42vh] lg:h-full lg:min-h-0 lg:w-[58%]">
+        <div className="menu-item-modal__image relative overflow-hidden bg-brand-100">
           {item.spiceLevel > 0 && (
             <div
               className="pointer-events-none absolute left-3 top-3 z-10 flex items-center gap-1 sm:left-5 sm:top-5"
@@ -151,7 +151,7 @@ export function MenuItemModal({
           />
         </div>
 
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-5 pt-6 sm:p-8 lg:w-[42%] lg:p-10">
+        <div className="menu-item-modal__content flex flex-col p-5 pt-6 sm:p-8 lg:p-10">
           <span className="sr-only">ID блюда {item.id}</span>
 
           <h2
