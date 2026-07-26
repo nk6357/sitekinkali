@@ -570,23 +570,41 @@ async function sendOrderEmails(order, siteOrigin) {
   const adminMessage = createAdminEmail(order, siteOrigin);
   const customerMessage = createCustomerEmail(order);
 
-  const results = await Promise.allSettled([
-    transporter.sendMail({
+  try {
+    await transporter.sendMail({
       from: { name: fromName, address: fromAddress },
       to: adminEmail,
       replyTo: order.customer.email,
       ...adminMessage,
-    }),
-    transporter.sendMail({
+    });
+  } catch (error) {
+    console.error('Admin order email delivery failed', {
+      orderId: order.orderId,
+      name: error instanceof Error ? error.name : 'UnknownError',
+      code: typeof error?.code === 'string' ? error.code : undefined,
+      command: typeof error?.command === 'string' ? error.command : undefined,
+      responseCode: Number.isInteger(error?.responseCode) ? error.responseCode : undefined,
+    });
+    throw new Error('Admin order email delivery failed', { cause: error });
+  }
+
+  try {
+    await transporter.sendMail({
       from: { name: fromName, address: fromAddress },
       to: order.customer.email,
       replyTo: adminEmail,
       ...customerMessage,
-    }),
-  ]);
-
-  if (results.some((result) => result.status === 'rejected')) {
-    throw new Error('One or more email deliveries failed');
+    });
+    return { receiptSent: true };
+  } catch (error) {
+    console.error('Customer receipt email delivery failed', {
+      orderId: order.orderId,
+      name: error instanceof Error ? error.name : 'UnknownError',
+      code: typeof error?.code === 'string' ? error.code : undefined,
+      command: typeof error?.command === 'string' ? error.command : undefined,
+      responseCode: Number.isInteger(error?.responseCode) ? error.responseCode : undefined,
+    });
+    return { receiptSent: false };
   }
 }
 
@@ -707,7 +725,7 @@ export async function processOrderRequest({ method, headers, body, ipAddress }) 
 
   enforceRateLimit(ipAddress);
   const order = validateOrderPayload(body);
-  await sendOrderEmails(order, getSiteOrigin(origin, host));
+  const { receiptSent } = await sendOrderEmails(order, getSiteOrigin(origin, host));
 
   return {
     status: 200,
@@ -715,6 +733,7 @@ export async function processOrderRequest({ method, headers, body, ipAddress }) 
     body: {
       success: true,
       orderId: order.orderId,
+      receiptSent,
       message: 'Заказ принят',
     },
   };
