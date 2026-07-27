@@ -22,10 +22,12 @@ export function CategoryFilter({
   // Автоматически прокручивать к активной категории
   useEffect(() => {
     if (activeTabRef.current && containerRef.current) {
-      activeTabRef.current.scrollIntoView({
+      const activeTab = activeTabRef.current;
+      const container = containerRef.current;
+
+      container.scrollTo({
+        left: activeTab.offsetLeft - (container.clientWidth - activeTab.offsetWidth) / 2,
         behavior: 'smooth',
-        block: 'nearest',
-        inline: 'center',
       });
     }
   }, [activeCategory]);

@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { CategoryFilter } from '../menu/CategoryFilter';
 import { MenuGrid } from '../menu/MenuGrid';
 import { MENU_CATEGORIES, menuItems } from '../../data/menu';
@@ -8,6 +8,7 @@ import type { MenuCategory } from '../../types';
  * Основная секция каталога меню с фильтром по категориям
  */
 export function Menu() {
+  const menuItemsRef = useRef<HTMLDivElement>(null);
   const [activeCategory, setActiveCategory] = useState<MenuCategory | null>(() =>
     window.matchMedia('(max-width: 639px)').matches ? null : MENU_CATEGORIES[0],
   );
@@ -31,6 +32,19 @@ export function Menu() {
     return () => desktopQuery.removeEventListener('change', ensureDesktopCategory);
   }, [availableCategories]);
 
+  const handleSelectCategory = (category: MenuCategory) => {
+    setActiveCategory(category);
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        menuItemsRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      });
+    });
+  };
+
   return (
     <section id="menu-section" className="bg-brand-50 py-8 sm:py-12">
       <div className="mx-auto max-w-7xl px-3 sm:px-4">
@@ -46,11 +60,11 @@ export function Menu() {
         <CategoryFilter
           categories={availableCategories}
           activeCategory={activeCategory}
-          onSelectCategory={setActiveCategory}
+          onSelectCategory={handleSelectCategory}
         />
 
         {activeCategory && (
-          <div className="mt-5 sm:mt-8">
+          <div ref={menuItemsRef} className="mt-5 scroll-mt-36 sm:mt-8 sm:scroll-mt-40">
             <button
               type="button"
               onClick={() => setActiveCategory(null)}
