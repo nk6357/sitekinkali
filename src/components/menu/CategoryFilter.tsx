@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MenuCategory } from '../../types';
 
 interface CategoryFilterProps {
@@ -18,6 +18,35 @@ export function CategoryFilter({
 }: CategoryFilterProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const activeTabRef = useRef<HTMLButtonElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateScrollCues = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const edgeTolerance = 2;
+    setCanScrollLeft(container.scrollLeft > edgeTolerance);
+    setCanScrollRight(
+      container.scrollLeft + container.clientWidth < container.scrollWidth - edgeTolerance,
+    );
+  }, []);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    updateScrollCues();
+    container.addEventListener('scroll', updateScrollCues, { passive: true });
+
+    const resizeObserver = new ResizeObserver(updateScrollCues);
+    resizeObserver.observe(container);
+
+    return () => {
+      container.removeEventListener('scroll', updateScrollCues);
+      resizeObserver.disconnect();
+    };
+  }, [categories, updateScrollCues]);
 
   // Автоматически прокручивать к активной категории
   useEffect(() => {
@@ -30,7 +59,17 @@ export function CategoryFilter({
         behavior: 'smooth',
       });
     }
-  }, [activeCategory]);
+  }, [activeCategory, updateScrollCues]);
+
+  const scrollCategories = (direction: -1 | 1) => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    container.scrollBy({
+      left: direction * Math.max(container.clientWidth * 0.72, 240),
+      behavior: 'smooth',
+    });
+  };
 
   return (
     <>
@@ -54,29 +93,65 @@ export function CategoryFilter({
         })}
       </div>
 
-      <div
-        ref={containerRef}
-        className="scrollbar-hide sticky top-[77px] z-30 hidden w-full overflow-x-auto bg-brand-50 py-3 sm:block"
-      >
-        <div className="scrollbar-hide mx-auto flex max-w-7xl gap-2 overflow-x-auto px-1">
-          {categories.map((category) => {
-            const isActive = activeCategory === category;
+      <div className="sticky top-[77px] z-30 hidden w-full bg-brand-50 py-3 sm:block">
+        <div className="relative mx-auto max-w-7xl">
+          <div
+            ref={containerRef}
+            className="scrollbar-hide flex w-full gap-2 overflow-x-auto px-1"
+          >
+            {categories.map((category) => {
+              const isActive = activeCategory === category;
 
-            return (
+              return (
+                <button
+                  key={category}
+                  ref={isActive ? activeTabRef : null}
+                  onClick={() => onSelectCategory(category)}
+                  className={`flex-shrink-0 whitespace-nowrap rounded-lg px-4 py-2 font-heading text-sm font-semibold transition-colors ${
+                    isActive
+                      ? 'bg-brand-900 text-brand-50'
+                      : 'bg-brand-100 text-brand-900 hover:bg-brand-300'
+                  }`}
+                >
+                  {category}
+                </button>
+              );
+            })}
+          </div>
+
+          {canScrollLeft && (
+            <>
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-brand-50 via-brand-50/90 to-transparent"
+              />
               <button
-                key={category}
-                ref={isActive ? activeTabRef : null}
-                onClick={() => onSelectCategory(category)}
-                className={`flex-shrink-0 whitespace-nowrap rounded-lg px-4 py-2 font-heading text-sm font-semibold transition-colors ${
-                  isActive
-                    ? 'bg-brand-900 text-brand-50'
-                    : 'bg-brand-100 text-brand-900 hover:bg-brand-300'
-                }`}
+                type="button"
+                aria-label="Показать предыдущие разделы меню"
+                onClick={() => scrollCategories(-1)}
+                className="absolute left-1 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-brand-900 font-heading text-2xl leading-none text-brand-50 shadow-md transition-transform hover:scale-105 active:scale-95"
               >
-                {category}
+                ‹
               </button>
-            );
-          })}
+            </>
+          )}
+
+          {canScrollRight && (
+            <>
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-brand-50 via-brand-50/90 to-transparent"
+              />
+              <button
+                type="button"
+                aria-label="Показать следующие разделы меню"
+                onClick={() => scrollCategories(1)}
+                className="absolute right-1 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-brand-900 font-heading text-2xl leading-none text-brand-50 shadow-md transition-transform hover:scale-105 active:scale-95"
+              >
+                ›
+              </button>
+            </>
+          )}
         </div>
       </div>
     </>
