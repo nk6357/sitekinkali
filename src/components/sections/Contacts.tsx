@@ -2,7 +2,7 @@ import { Icon } from '../icons/Icon';
 import { LEGAL_DETAILS } from '../../data/legal';
 
 /**
- * Секция контактов с адресом, телефоном, часами работы, картой и соцсетями
+ * Секция контактов с адресом, телефоном, часами работы и картой
  */
 export function Contacts() {
   return (
@@ -56,39 +56,6 @@ export function Contacts() {
               </div>
             </div>
 
-            {/* Соцсети */}
-            <div>
-              <h3 className="mb-4 font-heading text-2xl font-semibold text-brand-900 md:text-3xl">
-                Мы в соцсетях
-              </h3>
-              <div className="flex items-center justify-center gap-7 text-lg md:text-xl">
-                <a
-                  href="https://t.me/kinkali_restaurant"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:opacity-70 transition-opacity"
-                  aria-label="Telegram"
-                >
-                  <Icon name="тг" size="lg" alt="Telegram" className="text-brand-900" />
-                </a>
-                <a
-                  href="https://instagram.com/kinkali_restaurant"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-brand-900 hover:text-brand-700 font-semibold transition-colors"
-                >
-                  Instagram
-                </a>
-                <a
-                  href="https://vk.com/kinkali_restaurant"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-brand-900 hover:text-brand-700 font-semibold transition-colors"
-                >
-                  VK
-                </a>
-              </div>
-            </div>
           </div>
 
           {/* Карта */}

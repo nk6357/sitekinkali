@@ -39,6 +39,17 @@ test('escapes every dangerous HTML character', () => {
 test('uses the default comment when the comment is empty', () => {
   const order = validateOrderPayload(createValidPayload());
   assert.equal(order.comment, 'Как можно скорее');
+  assert.equal(order.orderFormat, 'В зале');
+});
+
+test('accepts only supported order formats', () => {
+  const takeawayOrder = validateOrderPayload(createValidPayload({ orderFormat: 'С собой' }));
+  assert.equal(takeawayOrder.orderFormat, 'С собой');
+
+  assert.throws(
+    () => validateOrderPayload(createValidPayload({ orderFormat: '<script>alert(1)</script>' })),
+    (error) => error instanceof OrderRequestError && error.status === 400,
+  );
 });
 
 test('rejects a forged order total', () => {
@@ -67,12 +78,31 @@ test('accepts a valid table reservation with an integer guest count', () => {
     name: 'Анна',
     phone: '+7 (999) 123-45-67',
     guests: 4,
-    dateTime: '2099-12-31T20:00',
-    consent: true,
+    dateTime: '31 декабря в 20:00',
+    offerAccepted: true,
+    personalDataConsent: true,
   });
 
   assert.equal(reservation.guests, 4);
-  assert.equal(reservation.dateTime, '2099-12-31T20:00');
+  assert.equal(reservation.dateTime, '31 декабря в 20:00');
+});
+
+test('rejects reservation time text longer than 59 characters with a public message', () => {
+  assert.throws(
+    () =>
+      validateReservationPayload({
+        name: 'Анна',
+        phone: '+7 (999) 123-45-67',
+        guests: 4,
+        dateTime: 'а'.repeat(60),
+        offerAccepted: true,
+        personalDataConsent: true,
+      }),
+    (error) =>
+      error instanceof OrderRequestError &&
+      error.status === 400 &&
+      error.publicMessage === 'Дата и время должны содержать не более 59 символов',
+  );
 });
 
 test('rejects a fractional guest count in a reservation', () => {
@@ -83,7 +113,8 @@ test('rejects a fractional guest count in a reservation', () => {
         phone: '+7 (999) 123-45-67',
         guests: 2.5,
         dateTime: '2099-12-31T20:00',
-        consent: true,
+        offerAccepted: true,
+        personalDataConsent: true,
       }),
     (error) => error instanceof OrderRequestError && error.status === 400,
   );
@@ -97,7 +128,23 @@ test('rejects a reservation without personal data consent', () => {
         phone: '+7 (999) 123-45-67',
         guests: 2,
         dateTime: '2099-12-31T20:00',
-        consent: false,
+        offerAccepted: true,
+        personalDataConsent: false,
+      }),
+    (error) => error instanceof OrderRequestError && error.status === 400,
+  );
+});
+
+test('rejects a reservation without accepting the public offer', () => {
+  assert.throws(
+    () =>
+      validateReservationPayload({
+        name: 'Анна',
+        phone: '+7 (999) 123-45-67',
+        guests: 2,
+        dateTime: '2099-12-31T20:00',
+        offerAccepted: false,
+        personalDataConsent: true,
       }),
     (error) => error instanceof OrderRequestError && error.status === 400,
   );

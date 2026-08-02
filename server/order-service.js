@@ -145,6 +145,11 @@ export function validateOrderPayload(payload) {
     typeof payload.comment === 'string' && payload.comment.trim()
       ? cleanText(payload.comment, 'комментарий', { min: 1, max: 500, multiline: true })
       : DEFAULT_COMMENT;
+  const orderFormat = payload.orderFormat === undefined ? 'В зале' : payload.orderFormat;
+
+  if (!['В зале', 'С собой'].includes(orderFormat)) {
+    throw new OrderRequestError(400, 'Некорректный формат заказа');
+  }
 
   return {
     customer,
@@ -152,6 +157,7 @@ export function validateOrderPayload(payload) {
     totalPrice: calculatedTotalPrice,
     totalItems: items.reduce((sum, item) => sum + item.quantity, 0),
     pickupLocation: process.env.PICKUP_LOCATION || DEFAULT_PICKUP_LOCATION,
+    orderFormat,
     paymentMethod: process.env.PAYMENT_METHOD || DEFAULT_PAYMENT_METHOD,
     comment,
     orderId: crypto.randomUUID(),
@@ -181,39 +187,11 @@ function getRestaurantDateTimeParts(value = new Date()) {
 }
 
 function validateLocalDateTime(value) {
-  const dateTime = cleanText(value, 'дата и время', { min: 16, max: 16 });
-  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/u.exec(dateTime);
-
-  if (!match) {
-    throw new OrderRequestError(400, 'Укажите корректные дату и время');
+  if (typeof value === 'string' && value.normalize('NFKC').trim().length > 59) {
+    throw new OrderRequestError(400, 'Дата и время должны содержать не более 59 символов');
   }
 
-  const [, year, month, day, hour, minute] = match;
-  const numeric = [year, month, day, hour, minute].map(Number);
-  const [numericYear, numericMonth, numericDay, numericHour, numericMinute] = numeric;
-  const calendarDate = new Date(
-    Date.UTC(numericYear, numericMonth - 1, numericDay, numericHour, numericMinute),
-  );
-
-  if (
-    calendarDate.getUTCFullYear() !== numericYear ||
-    calendarDate.getUTCMonth() !== numericMonth - 1 ||
-    calendarDate.getUTCDate() !== numericDay ||
-    numericHour > 23 ||
-    numericMinute > 59
-  ) {
-    throw new OrderRequestError(400, 'Укажите корректные дату и время');
-  }
-
-  const now = getRestaurantDateTimeParts();
-  const currentRestaurantMinute =
-    `${now.year}-${now.month}-${now.day}T${now.hour}:${now.minute}`;
-
-  if (dateTime <= currentRestaurantMinute) {
-    throw new OrderRequestError(400, 'Выберите будущие дату и время');
-  }
-
-  return dateTime;
+  return cleanText(value, 'дата и время', { min: 2, max: 59 });
 }
 
 export function validateReservationPayload(payload) {
@@ -221,12 +199,16 @@ export function validateReservationPayload(payload) {
     throw new OrderRequestError(400, 'Некорректные данные бронирования');
   }
 
-  if (payload.consent !== true) {
+  if (payload.offerAccepted !== true) {
+    throw new OrderRequestError(400, 'Необходимо принять условия публичной оферты');
+  }
+
+  if (payload.personalDataConsent !== true) {
     throw new OrderRequestError(400, 'Необходимо согласие на обработку данных');
   }
 
-  if (!Number.isInteger(payload.guests) || payload.guests < 1 || payload.guests > 30) {
-    throw new OrderRequestError(400, 'Количество человек должно быть целым числом от 1 до 30');
+  if (!Number.isInteger(payload.guests) || payload.guests < 1 || payload.guests > 50) {
+    throw new OrderRequestError(400, 'Количество человек должно быть целым числом от 1 до 50');
   }
 
   return {
@@ -244,6 +226,24 @@ function parseAllowedOrigins() {
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
+}
+
+function getSiteOrigin(origin, host) {
+  if (origin) {
+    return new URL(origin).origin;
+  }
+
+  if (host) {
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+    return new URL(`${protocol}://${host}`).origin;
+  }
+
+  const [allowedOrigin] = parseAllowedOrigins();
+  if (allowedOrigin) {
+    return new URL(allowedOrigin).origin;
+  }
+
+  throw new Error('Cannot determine the public site origin');
 }
 
 export function isRequestOriginAllowed(origin, host) {
@@ -373,14 +373,14 @@ function formatDate(value) {
   }).format(value);
 }
 
-function formatReservationDateTime(value) {
-  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/u.exec(value);
-  if (!match) {
-    return value;
+function createPhoneLink(phone, siteOrigin) {
+  let digits = String(phone).replace(/\D/g, '');
+  if (digits.length === 11 && digits.startsWith('8')) {
+    digits = `7${digits.slice(1)}`;
   }
-
-  const [, year, month, day, hour, minute] = match;
-  return `${day}.${month}.${year} в ${hour}:${minute}`;
+  const normalizedPhone = `+${digits}`;
+  const href = `${siteOrigin}/call#phone=${encodeURIComponent(normalizedPhone)}`;
+  return `<a href="${escapeHtml(href)}" style="color:inherit;text-decoration:underline">${escapeHtml(phone)}</a>`;
 }
 
 function createItemsHtml(items) {
@@ -447,6 +447,7 @@ function createEmailLayout({ eyebrow, title, intro, order, recipientDetails }) {
                 </div>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px">
                   <tr><td style="padding:5px 0;color:#7a695a">Самовывоз</td><td align="right" style="padding:5px 0;color:#2f251d">${escapeHtml(order.pickupLocation)}</td></tr>
+                  <tr><td style="padding:5px 0;color:#7a695a">Формат заказа</td><td align="right" style="padding:5px 0;color:#2f251d">${escapeHtml(order.orderFormat)}</td></tr>
                   <tr><td style="padding:5px 0;color:#7a695a">Оплата</td><td align="right" style="padding:5px 0;color:#2f251d">${escapeHtml(order.paymentMethod)}</td></tr>
                   <tr><td style="padding:5px 0;color:#7a695a">Комментарий</td><td align="right" style="padding:5px 0;color:#2f251d">${escapeHtml(order.comment).replaceAll('\n', '<br>')}</td></tr>
                   <tr><td style="padding:5px 0;color:#7a695a">Создан</td><td align="right" style="padding:5px 0;color:#2f251d">${escapeHtml(formatDate(order.createdAt))}</td></tr>
@@ -466,11 +467,11 @@ function createEmailLayout({ eyebrow, title, intro, order, recipientDetails }) {
 </html>`;
 }
 
-function createAdminEmail(order) {
+function createAdminEmail(order, siteOrigin) {
   const customerDetails = `
     <div style="padding:18px;background:#fff;border:1px solid #eadfce;border-radius:14px">
       <div style="margin-bottom:8px"><strong>Имя:</strong> ${escapeHtml(order.customer.name)}</div>
-      <div style="margin-bottom:8px"><strong>Телефон:</strong> ${escapeHtml(order.customer.phone)}</div>
+      <div style="margin-bottom:8px"><strong>Телефон:</strong> ${createPhoneLink(order.customer.phone, siteOrigin)}</div>
       <div><strong>Email:</strong> ${escapeHtml(order.customer.email)}</div>
     </div>`;
 
@@ -493,6 +494,7 @@ ${createItemsText(order.items)}
 
 Итого: ${formatPrice(order.totalPrice)}
 Самовывоз: ${order.pickupLocation}
+Формат заказа: ${order.orderFormat}
 Оплата: ${order.paymentMethod}
 Комментарий: ${order.comment}
 Создан: ${formatDate(order.createdAt)}`,
@@ -500,6 +502,11 @@ ${createItemsText(order.items)}
 }
 
 function createCustomerEmail(order) {
+  const customerPhone = `
+    <div style="padding:18px;background:#fff;border:1px solid #eadfce;border-radius:14px">
+      <strong>Телефон:</strong> ${escapeHtml(order.customer.phone)}
+    </div>`;
+
   return {
     subject: `Ваш заказ в ресторане «Кинкали» · ${order.orderId.slice(0, 8)}`,
     html: createEmailLayout({
@@ -507,7 +514,7 @@ function createCustomerEmail(order) {
       title: 'Спасибо, заказ принят!',
       intro: `Здравствуйте, <strong>${escapeHtml(order.customer.name)}</strong>! Ниже ваш электронный чек. Мы свяжемся с вами, чтобы подтвердить заказ.`,
       order,
-      recipientDetails: '',
+      recipientDetails: customerPhone,
     }),
     text: `Здравствуйте, ${order.customer.name}!
 
@@ -517,6 +524,7 @@ ${createItemsText(order.items)}
 
 Итого: ${formatPrice(order.totalPrice)}
 Самовывоз: ${order.pickupLocation}
+Формат заказа: ${order.orderFormat}
 Оплата: ${order.paymentMethod}
 Комментарий: ${order.comment}
 Номер заказа: ${order.orderId}
@@ -525,36 +533,54 @@ ${createItemsText(order.items)}
   };
 }
 
-async function sendOrderEmails(order) {
+async function sendOrderEmails(order, siteOrigin) {
   const adminEmail = getRequiredEnvironmentValue('ADMIN_EMAIL');
   const fromAddress = getRequiredEnvironmentValue('SMTP_FROM');
   const fromName = process.env.SMTP_FROM_NAME?.trim() || 'Ресторан Кинкали';
   const transporter = getTransporter();
-  const adminMessage = createAdminEmail(order);
+  const adminMessage = createAdminEmail(order, siteOrigin);
   const customerMessage = createCustomerEmail(order);
 
-  const results = await Promise.allSettled([
-    transporter.sendMail({
+  try {
+    await transporter.sendMail({
       from: { name: fromName, address: fromAddress },
       to: adminEmail,
       replyTo: order.customer.email,
       ...adminMessage,
-    }),
-    transporter.sendMail({
+    });
+  } catch (error) {
+    console.error('Admin order email delivery failed', {
+      orderId: order.orderId,
+      name: error instanceof Error ? error.name : 'UnknownError',
+      code: typeof error?.code === 'string' ? error.code : undefined,
+      command: typeof error?.command === 'string' ? error.command : undefined,
+      responseCode: Number.isInteger(error?.responseCode) ? error.responseCode : undefined,
+    });
+    throw new Error('Admin order email delivery failed', { cause: error });
+  }
+
+  try {
+    await transporter.sendMail({
       from: { name: fromName, address: fromAddress },
       to: order.customer.email,
       replyTo: adminEmail,
       ...customerMessage,
-    }),
-  ]);
-
-  if (results.some((result) => result.status === 'rejected')) {
-    throw new Error('One or more email deliveries failed');
+    });
+    return { receiptSent: true };
+  } catch (error) {
+    console.error('Customer receipt email delivery failed', {
+      orderId: order.orderId,
+      name: error instanceof Error ? error.name : 'UnknownError',
+      code: typeof error?.code === 'string' ? error.code : undefined,
+      command: typeof error?.command === 'string' ? error.command : undefined,
+      responseCode: Number.isInteger(error?.responseCode) ? error.responseCode : undefined,
+    });
+    return { receiptSent: false };
   }
 }
 
-function createReservationAdminEmail(reservation) {
-  const formattedDateTime = formatReservationDateTime(reservation.dateTime);
+function createReservationAdminEmail(reservation, siteOrigin) {
+  const formattedDateTime = reservation.dateTime;
 
   return {
     subject: `Новая бронь Кинкали · ${reservation.reservationId.slice(0, 8)}`,
@@ -581,7 +607,7 @@ function createReservationAdminEmail(reservation) {
                 <p style="margin:0 0 20px;line-height:1.6;color:#7c7c74">Позвоните гостю, чтобы подтвердить бронирование.</p>
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">
                   <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Имя</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${escapeHtml(reservation.name)}</strong></td></tr>
-                  <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Телефон</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${escapeHtml(reservation.phone)}</strong></td></tr>
+                  <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Телефон</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${createPhoneLink(reservation.phone, siteOrigin)}</strong></td></tr>
                   <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Гостей</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${reservation.guests}</strong></td></tr>
                   <tr><td style="padding:12px;color:#7c7c74">Дата и время</td><td align="right" style="padding:12px"><strong>${escapeHtml(formattedDateTime)}</strong></td></tr>
                 </table>
@@ -611,7 +637,7 @@ function createReservationAdminEmail(reservation) {
   };
 }
 
-async function sendReservationEmail(reservation) {
+async function sendReservationEmail(reservation, siteOrigin) {
   const adminEmail = getRequiredEnvironmentValue('ADMIN_EMAIL');
   const fromAddress = getRequiredEnvironmentValue('SMTP_FROM');
   const fromName = process.env.SMTP_FROM_NAME?.trim() || 'Ресторан Кинкали';
@@ -620,7 +646,7 @@ async function sendReservationEmail(reservation) {
   await transporter.sendMail({
     from: { name: fromName, address: fromAddress },
     to: adminEmail,
-    ...createReservationAdminEmail(reservation),
+    ...createReservationAdminEmail(reservation, siteOrigin),
   });
 }
 
@@ -670,7 +696,7 @@ export async function processOrderRequest({ method, headers, body, ipAddress }) 
 
   enforceRateLimit(ipAddress);
   const order = validateOrderPayload(body);
-  await sendOrderEmails(order);
+  const { receiptSent } = await sendOrderEmails(order, getSiteOrigin(origin, host));
 
   return {
     status: 200,
@@ -678,6 +704,7 @@ export async function processOrderRequest({ method, headers, body, ipAddress }) 
     body: {
       success: true,
       orderId: order.orderId,
+      receiptSent,
       message: 'Заказ принят',
     },
   };
@@ -719,7 +746,7 @@ export async function processReservationRequest({ method, headers, body, ipAddre
 
   enforceRateLimit(ipAddress);
   const reservation = validateReservationPayload(body);
-  await sendReservationEmail(reservation);
+  await sendReservationEmail(reservation, getSiteOrigin(origin, host));
 
   return {
     status: 200,

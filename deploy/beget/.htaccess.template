@@ -1,0 +1,18 @@
+Options -MultiViews
+DirectoryIndex index.html
+
+# Replace both placeholders during deployment. The application directory must
+# stay outside the public document root, so its .env file is never downloadable.
+PassengerNodejs __NODE_BINARY__
+PassengerAppRoot __APP_ROOT__
+PassengerAppType node
+PassengerStartupFile server.js
+
+RewriteEngine On
+
+# Vite is a single-page application: legal pages and /call are client routes.
+# Do not rewrite API requests — Passenger sends them to the Node application.
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]

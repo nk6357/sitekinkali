@@ -1,11 +1,13 @@
 import { useState, type FormEvent } from 'react';
+import { formatPhone } from '../../utils/formatters';
 
 interface ReservationForm {
   name: string;
   phone: string;
   guests: string;
   dateTime: string;
-  consent: boolean;
+  offerAccepted: boolean;
+  personalDataConsent: boolean;
 }
 
 const initialForm: ReservationForm = {
@@ -13,20 +15,16 @@ const initialForm: ReservationForm = {
   phone: '',
   guests: '',
   dateTime: '',
-  consent: false,
+  offerAccepted: false,
+  personalDataConsent: false,
 };
 
 export function ReservationSection() {
   const [form, setForm] = useState(initialForm);
   const [error, setError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reservationId, setReservationId] = useState('');
-
-  const [minDateTime] = useState(() =>
-    new Date(Date.now() - new Date().getTimezoneOffset() * 60_000)
-      .toISOString()
-      .slice(0, 16),
-  );
 
   const handleGuestsChange = (value: string) => {
     if (/^\d*$/.test(value)) {
@@ -37,10 +35,11 @@ export function ReservationSection() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
+    setPhoneError('');
 
     const guests = Number(form.guests);
-    if (!Number.isInteger(guests) || guests < 1 || guests > 30) {
-      setError('Количество человек должно быть целым числом от 1 до 30.');
+    if (!Number.isInteger(guests) || guests < 1 || guests > 50) {
+      setError('Количество человек должно быть целым числом от 1 до 50.');
       return;
     }
 
@@ -50,17 +49,27 @@ export function ReservationSection() {
     }
 
     if (!/^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/.test(form.phone)) {
-      setError('Укажите телефон в формате +7 (000) 000-00-00.');
+      setPhoneError('Укажите телефон в формате +7 (000) 000-00-00.');
       return;
     }
 
-    if (!form.dateTime || new Date(form.dateTime).getTime() < Date.now()) {
-      setError('Выберите будущие дату и время.');
+    if (form.dateTime.trim().length < 2) {
+      setError('Укажите желаемые дату и время.');
       return;
     }
 
-    if (!form.consent) {
-      setError('Подтвердите согласие с офертой и политикой конфиденциальности.');
+    if (form.dateTime.trim().length > 59) {
+      setError('Дата и время должны содержать не более 59 символов.');
+      return;
+    }
+
+    if (!form.offerAccepted) {
+      setError('Подтвердите принятие условий публичной оферты.');
+      return;
+    }
+
+    if (!form.personalDataConsent) {
+      setError('Дайте отдельное согласие на обработку персональных данных.');
       return;
     }
 
@@ -77,7 +86,8 @@ export function ReservationSection() {
           phone: form.phone,
           guests,
           dateTime: form.dateTime,
-          consent: form.consent,
+          offerAccepted: form.offerAccepted,
+          personalDataConsent: form.personalDataConsent,
         }),
       });
       const result = await response.json().catch(() => null);
@@ -156,15 +166,40 @@ export function ReservationSection() {
                     type="tel"
                     value={form.phone}
                     onChange={(event) =>
-                      setForm((current) => ({ ...current, phone: event.target.value }))
+                      {
+                        setForm((current) => ({
+                          ...current,
+                          phone: formatPhone(event.target.value),
+                        }));
+                        if (phoneError) {
+                          setPhoneError('');
+                        }
+                      }
+                    }
+                    onBlur={(event) =>
+                      setForm((current) => ({
+                        ...current,
+                        phone: formatPhone(event.target.value),
+                      }))
                     }
                     autoComplete="tel"
                     inputMode="tel"
                     placeholder="+7 (000) 000-00-00"
                     maxLength={18}
+                    aria-invalid={Boolean(phoneError)}
+                    aria-describedby={phoneError ? 'reservation-phone-error' : undefined}
                     className="h-14 w-full rounded-lg border-2 border-brand-200 bg-brand-50 px-4 outline-none transition-colors focus:border-brand-900"
                     required
                   />
+                  {phoneError && (
+                    <p
+                      id="reservation-phone-error"
+                      role="alert"
+                      className="text-sm font-semibold text-red-600"
+                    >
+                      {phoneError}
+                    </p>
+                  )}
                 </label>
 
                 <label className="space-y-2">
@@ -175,7 +210,7 @@ export function ReservationSection() {
                     onChange={(event) => handleGuestsChange(event.target.value)}
                     inputMode="numeric"
                     min={1}
-                    max={30}
+                    max={50}
                     step={1}
                     className="h-14 w-full rounded-lg border-2 border-brand-200 bg-brand-50 px-4 outline-none transition-colors focus:border-brand-900"
                     required
@@ -185,12 +220,13 @@ export function ReservationSection() {
                 <label className="space-y-2">
                   <span className="font-heading font-semibold text-brand-900">Дата и время *</span>
                   <input
-                    type="datetime-local"
+                    type="text"
                     value={form.dateTime}
-                    min={minDateTime}
                     onChange={(event) =>
                       setForm((current) => ({ ...current, dateTime: event.target.value }))
                     }
+                    placeholder="Например: 27 июля в 19:00"
+                    maxLength={120}
                     className="h-14 w-full rounded-lg border-2 border-brand-200 bg-brand-50 px-4 outline-none transition-colors focus:border-brand-900"
                     required
                   />
@@ -200,20 +236,46 @@ export function ReservationSection() {
               <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-brand-50 p-4">
                 <input
                   type="checkbox"
-                  checked={form.consent}
+                  checked={form.offerAccepted}
                   onChange={(event) =>
-                    setForm((current) => ({ ...current, consent: event.target.checked }))
+                    setForm((current) => ({ ...current, offerAccepted: event.target.checked }))
                   }
                   className="mt-1 h-5 w-5 flex-shrink-0 accent-brand-900"
                 />
                 <span className="text-sm leading-relaxed text-brand-700">
                   Я принимаю условия{' '}
                   <a href="/offer" target="_blank" rel="noopener noreferrer" className="font-semibold underline">
-                    оферты
+                    публичной оферты
+                  </a>
+                  .
+                </span>
+              </label>
+
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl bg-brand-50 p-4">
+                <input
+                  type="checkbox"
+                  checked={form.personalDataConsent}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      personalDataConsent: event.target.checked,
+                    }))
+                  }
+                  className="mt-1 h-5 w-5 flex-shrink-0 accent-brand-900"
+                />
+                <span className="text-sm leading-relaxed text-brand-700">
+                  Я даю отдельное{' '}
+                  <a
+                    href="/personal-data-consent"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold underline"
+                  >
+                    согласие на обработку персональных данных
                   </a>{' '}
-                  и{' '}
+                  и ознакомлен с{' '}
                   <a href="/privacy" target="_blank" rel="noopener noreferrer" className="font-semibold underline">
-                    политики конфиденциальности
+                    политикой обработки персональных данных
                   </a>
                   .
                 </span>
