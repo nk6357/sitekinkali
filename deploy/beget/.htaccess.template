@@ -8,6 +8,30 @@ PassengerAppRoot __APP_ROOT__
 PassengerAppType node
 PassengerStartupFile server.js
 
+<IfModule mod_headers.c>
+  # Vite adds hashes to generated CSS and JavaScript filenames, so these files
+  # can be cached permanently without keeping an outdated version after deploys.
+  <FilesMatch "\.(?:css|js)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Fonts and interface icons change rarely.
+  <FilesMatch "\.(?:woff2?|ttf|otf)$">
+    Header set Cache-Control "public, max-age=2592000, stale-while-revalidate=604800"
+  </FilesMatch>
+
+  # Dish and restaurant images keep their filenames when replaced. A shorter
+  # lifetime keeps them fast while allowing updates to appear automatically.
+  <FilesMatch "\.(?:avif|webp|png|jpe?g|gif|svg|ico|pdf|docx)$">
+    Header set Cache-Control "public, max-age=86400, stale-while-revalidate=604800"
+  </FilesMatch>
+
+  # The application shell must always check for a newer deployment.
+  <FilesMatch "\.html$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
 RewriteEngine On
 
 # Vite is a single-page application: legal pages and /call are client routes.
