@@ -60,7 +60,7 @@ export function Contacts() {
           {/* Карта */}
           <div className="overflow-hidden rounded-xl bg-brand-100 shadow-md">
             <iframe
-              src="https://yandex.ru/map-widget/v1/?ll=56.270926%2C57.999380&mode=search&oid=148918502337&ol=biz&z=17"
+              src="https://yandex.ru/map-widget/v1/?z=16&ol=biz&oid=148918502337"
               title="Ресторан «Кинкали» на Яндекс Картах"
               className="h-80 w-full border-0 md:h-96"
               loading="lazy"
