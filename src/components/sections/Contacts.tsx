@@ -1,4 +1,3 @@
-import { Icon } from '../icons/Icon';
 import { LEGAL_DETAILS } from '../../data/legal';
 
 /**
@@ -25,7 +24,7 @@ export function Contacts() {
                 г. Пермь, ул. Белинского, 6Б
               </p>
               <p className="mt-2 text-base text-brand-500 md:text-lg">
-                Центр города, легко найти по картам
+                Легко найти по картам
               </p>
             </div>
 
@@ -59,24 +58,18 @@ export function Contacts() {
           </div>
 
           {/* Карта */}
-          <div className="flex min-h-96 flex-col items-center justify-center overflow-hidden rounded-xl bg-brand-100 p-8 text-center shadow-md">
-            <div className="text-center">
-              <Icon name="инфо" size="lg" alt="Адрес" className="text-brand-900 mx-auto mb-4" />
-              <p className="mb-3 text-xl font-semibold text-brand-900 md:text-2xl">
-                г. Пермь, ул. Белинского, 6Б
-              </p>
-              <p className="mb-6 text-lg text-brand-700 md:text-xl">
-                Нажмите, чтобы открыть на карте
-              </p>
-              <a
-                href="https://yandex.ru/maps/?text=Пермь%2C+ул.+Белинского%2C+6Б&z=15"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-6 py-2 bg-brand-900 text-white rounded-lg hover:bg-brand-800 transition-colors font-semibold"
-              >
-                Открыть на Яндекс Картах →
-              </a>
-            </div>
+          <div className="overflow-hidden rounded-xl bg-brand-100 shadow-md">
+            <iframe
+              src="https://yandex.ru/map-widget/v1/?ll=56.270926%2C57.999380&mode=search&oid=148918502337&ol=biz&z=17"
+              title="Ресторан «Кинкали» на Яндекс Картах"
+              className="h-80 w-full border-0 md:h-96"
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+            <p className="px-4 py-5 text-center font-body text-lg font-semibold text-brand-900 md:text-xl">
+              г. Пермь, ул. Белинского, 6Б
+            </p>
           </div>
         </div>
       </div>
