@@ -9,6 +9,7 @@ import { Contacts } from './components/sections/Contacts';
 import { Cart } from './components/cart/Cart';
 import { CheckoutPage } from './components/checkout/CheckoutPage';
 import { LegalPage } from './components/legal/LegalPage';
+import { CookieConsent } from './components/legal/CookieConsent';
 import { LEGAL_PATHS } from './data/legal';
 import { useContext, useEffect } from 'react';
 
@@ -78,6 +79,7 @@ export default function App() {
   return (
     <CartProvider>
       <AppContent />
+      <CookieConsent />
     </CartProvider>
   );
 }

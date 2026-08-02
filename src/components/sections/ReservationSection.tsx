@@ -88,6 +88,7 @@ export function ReservationSection() {
           dateTime: form.dateTime,
           offerAccepted: form.offerAccepted,
           personalDataConsent: form.personalDataConsent,
+          legalVersion: '2026-08-03',
         }),
       });
       const result = await response.json().catch(() => null);

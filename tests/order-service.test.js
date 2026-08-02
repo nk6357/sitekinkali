@@ -25,6 +25,9 @@ function createValidPayload(overrides = {}) {
     ],
     totalPrice: 300,
     comment: '',
+    offerAccepted: true,
+    personalDataConsent: true,
+    legalVersion: '2026-08-03',
     ...overrides,
   };
 }
@@ -68,6 +71,20 @@ test('rejects CRLF injection in customer email', () => {
   );
 });
 
+test('rejects an order without separate personal data consent', () => {
+  assert.throws(
+    () => validateOrderPayload(createValidPayload({ personalDataConsent: false })),
+    (error) => error instanceof OrderRequestError && error.status === 400,
+  );
+});
+
+test('rejects an order without accepting the public offer', () => {
+  assert.throws(
+    () => validateOrderPayload(createValidPayload({ offerAccepted: false })),
+    (error) => error instanceof OrderRequestError && error.status === 400,
+  );
+});
+
 test('allows the request host and rejects unrelated origins', () => {
   assert.equal(isRequestOriginAllowed('https://kinkali.example', 'kinkali.example'), true);
   assert.equal(isRequestOriginAllowed('https://evil.example', 'kinkali.example'), false);
@@ -81,6 +98,7 @@ test('accepts a valid table reservation with an integer guest count', () => {
     dateTime: '31 декабря в 20:00',
     offerAccepted: true,
     personalDataConsent: true,
+    legalVersion: '2026-08-03',
   });
 
   assert.equal(reservation.guests, 4);
@@ -97,6 +115,7 @@ test('rejects reservation time text longer than 59 characters with a public mess
         dateTime: 'а'.repeat(60),
         offerAccepted: true,
         personalDataConsent: true,
+        legalVersion: '2026-08-03',
       }),
     (error) =>
       error instanceof OrderRequestError &&
@@ -115,6 +134,7 @@ test('rejects a fractional guest count in a reservation', () => {
         dateTime: '2099-12-31T20:00',
         offerAccepted: true,
         personalDataConsent: true,
+        legalVersion: '2026-08-03',
       }),
     (error) => error instanceof OrderRequestError && error.status === 400,
   );
@@ -130,6 +150,7 @@ test('rejects a reservation without personal data consent', () => {
         dateTime: '2099-12-31T20:00',
         offerAccepted: true,
         personalDataConsent: false,
+        legalVersion: '2026-08-03',
       }),
     (error) => error instanceof OrderRequestError && error.status === 400,
   );
@@ -145,6 +166,7 @@ test('rejects a reservation without accepting the public offer', () => {
         dateTime: '2099-12-31T20:00',
         offerAccepted: false,
         personalDataConsent: true,
+        legalVersion: '2026-08-03',
       }),
     (error) => error instanceof OrderRequestError && error.status === 400,
   );

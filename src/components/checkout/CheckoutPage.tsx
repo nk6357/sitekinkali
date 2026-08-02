@@ -116,6 +116,9 @@ export function CheckoutPage({ onClose }: CheckoutPageProps) {
         orderFormat: formData.orderFormat,
         paymentMethod,
         comment: formData.comment || 'Как можно скорее',
+        offerAccepted: true,
+        personalDataConsent: formData.consent,
+        legalVersion: '2026-08-03',
         timestamp: new Date().toISOString(),
       };
 

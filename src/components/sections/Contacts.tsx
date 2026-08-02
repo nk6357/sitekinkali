@@ -1,9 +1,26 @@
+import { useEffect, useState } from 'react';
 import { LEGAL_DETAILS } from '../../data/legal';
+import {
+  COOKIE_CHOICE_EVENT,
+  getCookieChoice,
+  setCookieChoice,
+  type CookieChoice,
+} from '../legal/CookieConsent';
 
 /**
  * Секция контактов с адресом, телефоном, часами работы и картой
  */
 export function Contacts() {
+  const [cookieChoice, updateCookieChoice] = useState<CookieChoice | null>(() => getCookieChoice());
+
+  useEffect(() => {
+    const handleChoice = (event: Event) => {
+      updateCookieChoice((event as CustomEvent<CookieChoice>).detail);
+    };
+    window.addEventListener(COOKIE_CHOICE_EVENT, handleChoice);
+    return () => window.removeEventListener(COOKIE_CHOICE_EVENT, handleChoice);
+  }, []);
+
   return (
     <section id="contacts" className="bg-brand-50 py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4">
@@ -59,14 +76,30 @@ export function Contacts() {
 
           {/* Карта */}
           <div className="overflow-hidden rounded-xl bg-brand-100 shadow-md">
-            <iframe
-              src="https://yandex.ru/map-widget/v1/?z=16&ol=biz&oid=148918502337"
-              title="Ресторан «Кинкали» на Яндекс Картах"
-              className="h-80 w-full border-0 md:h-96"
-              loading="lazy"
-              allowFullScreen
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+            {cookieChoice === 'all' ? (
+              <iframe
+                src="https://yandex.ru/map-widget/v1/?z=16&ol=biz&oid=148918502337"
+                title="Ресторан «Кинкали» на Яндекс Картах"
+                className="h-80 w-full border-0 md:h-96"
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            ) : (
+              <div className="flex h-80 flex-col items-center justify-center px-6 text-center md:h-96">
+                <p className="max-w-md text-brand-700">
+                  Карта загружается с сервиса Яндекс и может использовать cookies. Для просмотра
+                  необходимо отдельное разрешение.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setCookieChoice('all')}
+                  className="mt-5 rounded-lg bg-brand-900 px-6 py-3 font-semibold text-white"
+                >
+                  Показать Яндекс Карты
+                </button>
+              </div>
+            )}
             <p className="px-4 py-5 text-center font-body text-lg font-semibold text-brand-900 md:text-xl">
               г. Пермь, ул. Белинского, 6Б
             </p>

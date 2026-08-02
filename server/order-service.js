@@ -5,6 +5,7 @@ const MAX_BODY_BYTES = 64 * 1024;
 const DEFAULT_COMMENT = 'Как можно скорее';
 const DEFAULT_PICKUP_LOCATION = 'Самовывоз Белинского, 6Б';
 const DEFAULT_PAYMENT_METHOD = 'Оплата наличными или банковской картой при получении заказа';
+const LEGAL_VERSION = '2026-08-03';
 const RATE_LIMIT_STORE = new Map();
 
 let cachedTransporter;
@@ -97,6 +98,18 @@ export function validateOrderPayload(payload) {
     throw new OrderRequestError(400, 'Заказ должен содержать от 1 до 50 позиций');
   }
 
+  if (payload.offerAccepted !== true) {
+    throw new OrderRequestError(400, 'Необходимо принять условия публичной оферты');
+  }
+
+  if (payload.personalDataConsent !== true) {
+    throw new OrderRequestError(400, 'Необходимо согласие на обработку данных');
+  }
+
+  if (payload.legalVersion !== LEGAL_VERSION) {
+    throw new OrderRequestError(400, 'Обновите страницу и ознакомьтесь с актуальными документами');
+  }
+
   const customer = {
     name: cleanText(payload.customer.name, 'имя', { min: 2, max: 80 }),
     phone: cleanPhone(payload.customer.phone),
@@ -162,6 +175,9 @@ export function validateOrderPayload(payload) {
     comment,
     orderId: crypto.randomUUID(),
     createdAt: new Date(),
+    legalVersion: LEGAL_VERSION,
+    offerAccepted: true,
+    personalDataConsent: true,
   };
 }
 
@@ -207,6 +223,10 @@ export function validateReservationPayload(payload) {
     throw new OrderRequestError(400, 'Необходимо согласие на обработку данных');
   }
 
+  if (payload.legalVersion !== LEGAL_VERSION) {
+    throw new OrderRequestError(400, 'Обновите страницу и ознакомьтесь с актуальными документами');
+  }
+
   if (!Number.isInteger(payload.guests) || payload.guests < 1 || payload.guests > 50) {
     throw new OrderRequestError(400, 'Количество человек должно быть целым числом от 1 до 50');
   }
@@ -218,6 +238,9 @@ export function validateReservationPayload(payload) {
     dateTime: validateLocalDateTime(payload.dateTime),
     reservationId: crypto.randomUUID(),
     createdAt: new Date(),
+    legalVersion: LEGAL_VERSION,
+    offerAccepted: true,
+    personalDataConsent: true,
   };
 }
 
@@ -472,7 +495,8 @@ function createAdminEmail(order, siteOrigin) {
     <div style="padding:18px;background:#fff;border:1px solid #eadfce;border-radius:14px">
       <div style="margin-bottom:8px"><strong>Имя:</strong> ${escapeHtml(order.customer.name)}</div>
       <div style="margin-bottom:8px"><strong>Телефон:</strong> ${createPhoneLink(order.customer.phone, siteOrigin)}</div>
-      <div><strong>Email:</strong> ${escapeHtml(order.customer.email)}</div>
+      <div style="margin-bottom:8px"><strong>Email:</strong> ${escapeHtml(order.customer.email)}</div>
+      <div><strong>Юридические подтверждения:</strong> оферта принята; отдельное согласие на обработку персональных данных получено (редакция ${escapeHtml(order.legalVersion)}, ${escapeHtml(formatDate(order.createdAt))}, IP: ${escapeHtml(order.requestIp)})</div>
     </div>`;
 
   return {
@@ -497,7 +521,10 @@ ${createItemsText(order.items)}
 Формат заказа: ${order.orderFormat}
 Оплата: ${order.paymentMethod}
 Комментарий: ${order.comment}
-Создан: ${formatDate(order.createdAt)}`,
+Создан: ${formatDate(order.createdAt)}
+Юридические подтверждения: оферта принята; отдельное согласие на обработку персональных данных получено
+Редакция документов: ${order.legalVersion}
+IP запроса: ${order.requestIp}`,
   };
 }
 
@@ -611,6 +638,7 @@ function createReservationAdminEmail(reservation, siteOrigin) {
                   <tr><td style="padding:12px;border-bottom:1px solid #dcdcd4;color:#7c7c74">Гостей</td><td align="right" style="padding:12px;border-bottom:1px solid #dcdcd4"><strong>${reservation.guests}</strong></td></tr>
                   <tr><td style="padding:12px;color:#7c7c74">Дата и время</td><td align="right" style="padding:12px"><strong>${escapeHtml(formattedDateTime)}</strong></td></tr>
                 </table>
+                <p style="margin:20px 0 0;font-size:12px;line-height:1.5;color:#7c7c74">Оферта принята; отдельное согласие на обработку персональных данных получено. Редакция: ${escapeHtml(reservation.legalVersion)}; ${escapeHtml(formatDate(reservation.createdAt))}; IP: ${escapeHtml(reservation.requestIp)}.</p>
               </td>
             </tr>
             <tr>
@@ -632,6 +660,9 @@ function createReservationAdminEmail(reservation, siteOrigin) {
 Дата и время: ${formattedDateTime}
 Номер заявки: ${reservation.reservationId}
 Отправлено: ${formatDate(reservation.createdAt)}
+Юридические подтверждения: оферта принята; отдельное согласие на обработку персональных данных получено
+Редакция документов: ${reservation.legalVersion}
+IP запроса: ${reservation.requestIp}
 
 Позвоните гостю, чтобы подтвердить бронирование.`,
   };
@@ -696,6 +727,7 @@ export async function processOrderRequest({ method, headers, body, ipAddress }) 
 
   enforceRateLimit(ipAddress);
   const order = validateOrderPayload(body);
+  order.requestIp = cleanText(String(ipAddress || 'не определён'), 'IP-адрес', { min: 2, max: 100 });
   const { receiptSent } = await sendOrderEmails(order, getSiteOrigin(origin, host));
 
   return {
@@ -746,6 +778,7 @@ export async function processReservationRequest({ method, headers, body, ipAddre
 
   enforceRateLimit(ipAddress);
   const reservation = validateReservationPayload(body);
+  reservation.requestIp = cleanText(String(ipAddress || 'не определён'), 'IP-адрес', { min: 2, max: 100 });
   await sendReservationEmail(reservation, getSiteOrigin(origin, host));
 
   return {
