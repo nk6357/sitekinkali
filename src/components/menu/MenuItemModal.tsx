@@ -119,7 +119,7 @@ export function MenuItemModal({
           ref={closeButtonRef}
           type="button"
           onClick={onClose}
-          className="absolute right-3 top-3 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-brand-50/95 font-heading text-3xl leading-none text-brand-900 shadow-md transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-brand-900 focus:ring-offset-2 sm:right-5 sm:top-5"
+          className="absolute right-3 top-3 z-20 flex h-11 w-11 items-center justify-center rounded-full border-2 border-brand-900 bg-brand-50/95 font-heading text-3xl leading-none text-brand-900 shadow-md transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-brand-900 focus:ring-offset-2 sm:right-5 sm:top-5"
           aria-label="Закрыть карточку блюда"
         >
           ×
