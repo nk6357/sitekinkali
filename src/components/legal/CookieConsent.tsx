@@ -16,6 +16,7 @@ export function setCookieChoice(choice: CookieChoice) {
 
 export function CookieConsent() {
   const [choice, setChoice] = useState<CookieChoice | null>(() => getCookieChoice());
+  const [mapConsent, setMapConsent] = useState(false);
 
   useEffect(() => {
     const handleChoice = (event: Event) => {
@@ -44,11 +45,24 @@ export function CookieConsent() {
           уведомлении о cookies
         </a>.
       </p>
+      <label className="mt-4 flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-brand-800 sm:text-base">
+        <input
+          type="checkbox"
+          checked={mapConsent}
+          onChange={(event) => setMapConsent(event.target.checked)}
+          className="mt-1 h-4 w-4 accent-brand-900"
+        />
+        <span>
+          Я согласен на использование cookies и передачу технических данных сервису Яндекс для
+          отображения карты.
+        </span>
+      </label>
       <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
         <button
           type="button"
           onClick={() => choose('all')}
-          className="rounded-lg bg-brand-900 px-4 py-3 font-semibold text-white"
+          disabled={!mapConsent}
+          className="rounded-lg bg-brand-900 px-4 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-45"
         >
           Разрешить карту
         </button>
