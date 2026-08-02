@@ -10,7 +10,7 @@ export function Footer() {
   return (
     <footer className="bg-brand-900 text-brand-50 py-12">
       <div className="mx-auto max-w-7xl px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 gap-8 mb-8 md:grid-cols-2">
           {/* Логотип и описание */}
           <div className="flex flex-col gap-4">
             <Icon name="аватар" size="lg" alt="Логотип" />
@@ -34,37 +34,6 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Соцсети */}
-          <div className="flex flex-col gap-4">
-            <h3 className="font-heading font-semibold text-lg">Мы в соцсетях</h3>
-            <div className="flex items-center gap-4">
-              <a
-                href="https://t.me/kinkali_restaurant"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:opacity-70 transition-opacity"
-                aria-label="Telegram"
-              >
-                <Icon name="тг" size="md" alt="Telegram" className="text-brand-50" />
-              </a>
-              <a
-                href="https://instagram.com/kinkali_restaurant"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm hover:text-brand-300 transition-colors"
-              >
-                Instagram
-              </a>
-              <a
-                href="https://vk.com/kinkali_restaurant"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm hover:text-brand-300 transition-colors"
-              >
-                VK
-              </a>
-            </div>
-          </div>
         </div>
 
         {/* Разделитель */}
