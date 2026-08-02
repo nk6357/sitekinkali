@@ -20,12 +20,15 @@
 
 @layer base {
   html {
+    color-scheme: only light;
     scroll-behavior: smooth;
     font-size: clamp(15px, 0.25vw + 14px, 18px);
+    background-color: #F5F3ED;
   }
 
   body {
     @apply bg-brand-50 font-body text-brand-900 antialiased text-lg;
+    color-scheme: only light;
   }
 
   h1,
