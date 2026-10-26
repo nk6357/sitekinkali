@@ -24,7 +24,12 @@ if (process.env.TRUST_PROXY === 'true') {
 app.disable('x-powered-by');
 app.use((request, response, next) => {
   for (const [name, value] of Object.entries(createSecurityHeaders())) {
-    response.setHeader(name, value);
+    // Express sets the correct media type for JSON responses and static files.
+    // Applying the API JSON type globally would make HTML fallbacks fail when
+    // X-Content-Type-Options is set to nosniff.
+    if (name.toLowerCase() !== 'content-type') {
+      response.setHeader(name, value);
+    }
   }
   next();
 });
