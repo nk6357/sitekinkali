@@ -31,6 +31,9 @@ ALLOWED_ORIGINS=https://kinkali.ru,https://www.kinkali.ru
 
 ## Passenger
 
+Passenger запускает `passenger.cjs`, который загружает основной ES-модуль
+`server.js`.
+
 После сборки нужно скопировать `.htaccess.template` в `dist/.htaccess` и
 подставить абсолютные пути `PassengerNodejs` и `PassengerAppRoot`.
 Затем создать `~/kinkali/tmp/restart.txt`, чтобы Passenger перезапустил

@@ -7,7 +7,7 @@ ErrorDocument 404 /404.html
 PassengerNodejs __NODE_BINARY__
 PassengerAppRoot __APP_ROOT__
 PassengerAppType node
-PassengerStartupFile server.js
+PassengerStartupFile passenger.cjs
 
 <IfModule mod_headers.c>
   # Vite adds hashes to generated CSS and JavaScript filenames, so these files
