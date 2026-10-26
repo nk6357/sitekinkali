@@ -64,11 +64,13 @@ function AppContent() {
   return (
     <>
       <Header />
-      <Menu />
-      <About />
-      <OrderSection />
-      <ReservationSection />
-      <Contacts />
+      <main>
+        <Menu />
+        <About />
+        <OrderSection />
+        <ReservationSection />
+        <Contacts />
+      </main>
       <Footer />
       <Cart />
     </>
