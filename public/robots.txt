@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /call
+
+Host: kinkali.ru
+Sitemap: https://kinkali.ru/sitemap.xml

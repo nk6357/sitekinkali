@@ -50,10 +50,15 @@ export function Menu() {
       <div className="mx-auto max-w-7xl px-3 sm:px-4">
         {/* Заголовок */}
       <div className="mb-8 text-center sm:mb-12">
+        <h1 className="sr-only">Ресторан «Кинкали» — грузинская кухня в Перми</h1>
         <img
           src="/brandbook/кинкали%20надпись%20%2B%20лого.jpg"
-          alt="Кинкали"
+          alt="Ресторан Кинкали — грузинская кухня в Перми"
+          width={1800}
+          height={681}
           className="mx-auto h-auto w-[190px] max-w-full sm:w-[260px] lg:w-[280px]"
+          loading="eager"
+          fetchPriority="high"
         />
       </div>
         {/* Фильтр категорий */}

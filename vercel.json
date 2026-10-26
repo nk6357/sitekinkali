@@ -108,8 +108,12 @@
       "source": "/(.*)",
       "headers": [
         {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src https://yandex.ru https://*.yandex.ru; img-src 'self' data:; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src https://yandex.ru https://*.yandex.ru; img-src 'self' data:; object-src 'none'; script-src 'self' 'sha256-X5OST9ensoCYWNEl7eB8i35nf6Xh4kzvSToyfu/pdtk='; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests"
         },
         {
           "key": "Permissions-Policy",

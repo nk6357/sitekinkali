@@ -13,9 +13,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const MENU_CATEGORIES = [
-  'Холодные закуски',
-  'Горячие закуски',
   'Салаты',
+  'Горячие закуски',
+  'Холодные закуски',
   'Супы',
   'Фирменные "Кинкали"',
   'Хинкали',
@@ -28,6 +28,15 @@ const MENU_CATEGORIES = [
   'Горячие напитки',
   'Безалкогольные напитки',
   'Фуршетное меню',
+];
+
+// Keep the generated item records stable when only the visible category order
+// changes. This avoids rewriting the whole menu file during every build.
+const MENU_SOURCE_CATEGORIES = [
+  'Холодные закуски',
+  'Горячие закуски',
+  'Салаты',
+  ...MENU_CATEGORIES.slice(3),
 ];
 
 const MENU12_PATH = path.join(__dirname, '../Menu12');
@@ -96,7 +105,7 @@ function generateMenuTS() {
   const menuItems = [];
   let count = 0;
 
-  for (const category of MENU_CATEGORIES) {
+  for (const category of MENU_SOURCE_CATEGORIES) {
     const categoryPath = path.join(MENU12_PATH, category);
 
     if (!fs.existsSync(categoryPath)) {
@@ -134,9 +143,9 @@ function generateMenuTS() {
 
 /** Категории меню — строгий порядок отображения на сайте */
 export const MENU_CATEGORIES: MenuCategory[] = [
-  'Холодные закуски',
-  'Горячие закуски',
   'Салаты',
+  'Горячие закуски',
+  'Холодные закуски',
   'Супы',
   'Фирменные "Кинкали"',
   'Хинкали',

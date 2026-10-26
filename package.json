@@ -8,7 +8,7 @@
     "dev:vite": "vite",
     "dev:server": "node server.js",
     "generate": "node scripts/generateMenu.js",
-    "build": "npm run generate && tsc -b && vite build",
+    "build": "npm run generate && tsc -b && vite build && node scripts/generateSeoPages.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "test:server": "node --test tests/order-service.test.js"

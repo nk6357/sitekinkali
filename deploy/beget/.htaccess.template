@@ -1,5 +1,6 @@
 Options -MultiViews
 DirectoryIndex index.html
+ErrorDocument 404 /404.html
 
 # Replace both placeholders during deployment. The application directory must
 # stay outside the public document root, so its .env file is never downloadable.
@@ -30,13 +31,27 @@ PassengerStartupFile server.js
   <FilesMatch "\.html$">
     Header set Cache-Control "public, max-age=0, must-revalidate"
   </FilesMatch>
+
+  <FilesMatch "\.(?:xml|txt|webmanifest)$">
+    Header set Cache-Control "public, max-age=3600, must-revalidate"
+  </FilesMatch>
+
+  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self' data:; form-action 'self'; frame-ancestors 'none'; frame-src https://yandex.ru https://*.yandex.ru; img-src 'self' data:; object-src 'none'; script-src 'self' 'sha256-X5OST9ensoCYWNEl7eB8i35nf6Xh4kzvSToyfu/pdtk='; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests"
+  Header always set Permissions-Policy "camera=(), geolocation=(), microphone=(), payment=(), usb=()"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+
 </IfModule>
 
 RewriteEngine On
 
-# Vite is a single-page application: legal pages and /call are client routes.
-# Do not rewrite API requests — Passenger sends them to the Node application.
-RewriteCond %{REQUEST_URI} !^/api/
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.html [L]
+# The public address is always HTTPS without www. Technical domains, the
+# request path, and the query string are preserved by the redirect.
+RewriteCond %{HTTP_HOST} !^kinkali\.ru(?::[0-9]+)?$ [NC,OR]
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://kinkali.ru%{REQUEST_URI} [R=301,L,NE]
+
+# The build creates static entry points for legal pages. /call remains a client
+# route because the phone number is carried in the URL fragment.
+RewriteRule ^call/?$ index.html [L]

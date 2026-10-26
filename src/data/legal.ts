@@ -11,7 +11,7 @@ export const LEGAL_DETAILS = {
   email: 'hazelmind@bk.ru',
   emailHref: 'mailto:hazelmind@bk.ru',
   workingHours: 'пн–чт и вс: 12:00–00:00; пт–сб: 12:00–01:00',
-  siteUrl: 'https://kinkali-ten.vercel.app',
+  siteUrl: 'https://kinkali.ru',
   updatedAt: '3 августа 2026 года',
 } as const;
 

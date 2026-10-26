@@ -7,8 +7,8 @@
 
 ```text
 ~/kinkali/                 # приложение, закрытый файл .env и node_modules
-~/walkinon.beget.tech/     # каталог сайта, созданный в панели Beget
-~/walkinon.beget.tech/public_html -> ~/kinkali/dist
+~/kinkali.ru/              # каталог сайта, созданный в панели Beget
+~/kinkali.ru/public_html -> ~/kinkali/dist
 ```
 
 `public_html` должен указывать только на `dist`. Поэтому `.env` остаётся вне
@@ -16,13 +16,13 @@
 
 ## Конфигурация окружения
 
-Создайте `~/kinkali/.env` по образцу `.env.example`. Для тестового домена
+Создайте `~/kinkali/.env` по образцу `.env.example`. Для основного домена
 укажите:
 
 ```env
 NODE_ENV=production
 TRUST_PROXY=true
-ALLOWED_ORIGINS=https://walkinon.beget.tech
+ALLOWED_ORIGINS=https://kinkali.ru,https://www.kinkali.ru
 ```
 
 Укажите реальные `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`,
@@ -35,6 +35,10 @@ ALLOWED_ORIGINS=https://walkinon.beget.tech
 подставить абсолютные пути `PassengerNodejs` и `PassengerAppRoot`.
 Затем создать `~/kinkali/tmp/restart.txt`, чтобы Passenger перезапустил
 приложение.
+
+В панели Beget привяжите `kinkali.ru` к каталогу `~/kinkali.ru/public_html`,
+включите бесплатный SSL-сертификат и его автоматическое продление. Конфигурация
+перенаправляет HTTP и `www.kinkali.ru` на `https://kinkali.ru`.
 
 Конфигурация поддерживает API заказов и бронирований, а также клиентские
 маршруты документов (`/offer`, `/privacy` и другие).

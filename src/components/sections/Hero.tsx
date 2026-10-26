@@ -84,11 +84,11 @@ export function Hero() {
         <div className="mt-16 flex flex-col md:flex-row gap-8 justify-center text-brand-200 text-sm">
           <div className="flex items-center gap-2 justify-center">
             <Icon name="инфо" size="sm" alt="Часы" className="text-brand-100" />
-            <span>Пн-Вс 11:00 - 23:00</span>
+            <span>Пн–чт и вс 12:00–00:00; пт–сб 12:00–01:00</span>
           </div>
           <div className="flex items-center gap-2 justify-center">
             <Icon name="инфо" size="sm" alt="Адрес" className="text-brand-100" />
-            <span>г. Пермь, ул. Ленина, д. 42</span>
+            <span>г. Пермь, ул. Белинского, 6Б</span>
           </div>
         </div>
       </div>
