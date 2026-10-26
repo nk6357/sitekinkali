@@ -1,5 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   createSecurityHeaders,
   getPublicError,
@@ -12,6 +14,8 @@ dotenv.config();
 
 const app = express();
 const PORT = Number.parseInt(process.env.PORT || '3000', 10);
+const appDirectory = path.dirname(fileURLToPath(import.meta.url));
+const staticDirectory = path.join(appDirectory, 'dist');
 
 if (process.env.TRUST_PROXY === 'true') {
   app.set('trust proxy', 1);
@@ -84,6 +88,20 @@ app.all('/api/reservations/send-email', async (request, response) => {
 
 app.get('/api/health', (_request, response) => {
   response.json({ status: 'ok' });
+});
+
+app.use('/api', (_request, response) => {
+  response.status(404).json({ success: false, error: 'API-маршрут не найден' });
+});
+
+// Passenger receives requests for extensionless paths before Apache can resolve
+// directories such as /privacy/index.html. Serving the production build here
+// keeps those public documents available on Beget without exposing application
+// files or turning unknown addresses into successful SPA responses.
+app.use(express.static(staticDirectory, { index: 'index.html', redirect: true }));
+
+app.use((_request, response) => {
+  response.status(404).sendFile(path.join(staticDirectory, '404.html'));
 });
 
 app.use((error, _request, response, _next) => {
