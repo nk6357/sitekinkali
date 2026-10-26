@@ -52,6 +52,10 @@ RewriteCond %{HTTP_HOST} !^kinkali\.ru(?::[0-9]+)?$ [NC,OR]
 RewriteCond %{HTTPS} !=on
 RewriteRule ^ https://kinkali.ru%{REQUEST_URI} [R=301,L,NE]
 
+# API requests must reach the Passenger application instead of the static 404
+# handler below.
+RewriteRule ^api(?:/|$) - [L]
+
 # The build creates static entry points for legal pages. /call remains a client
 # route because the phone number is carried in the URL fragment.
 RewriteRule ^call/?$ index.html [L]
