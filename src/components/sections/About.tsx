@@ -5,10 +5,34 @@ import { Icon } from '../icons/Icon';
  */
 export function About() {
   const interiorPhotos = [
-    { id: 1, title: 'Основной зал' },
-    { id: 2, title: 'Приватная зона' },
-    { id: 3, title: 'Бар' },
-    { id: 4, title: 'Терраса' },
+    {
+      id: 1,
+      src: '/brandbook/interior/banquet-hall.webp',
+      alt: 'Банкетный зал ресторана «Кинкали»',
+      width: 1200,
+      height: 1600,
+    },
+    {
+      id: 2,
+      src: '/brandbook/interior/fresco-hall.webp',
+      alt: 'Зал ресторана «Кинкали» с настенной фреской',
+      width: 1200,
+      height: 1600,
+    },
+    {
+      id: 3,
+      src: '/brandbook/interior/main-hall.webp',
+      alt: 'Интерьер основного зала ресторана «Кинкали»',
+      width: 1200,
+      height: 1600,
+    },
+    {
+      id: 4,
+      src: '/brandbook/interior/evening-banquet.webp',
+      alt: 'Вечерняя сервировка банкетного зала ресторана «Кинкали»',
+      width: 1067,
+      height: 1600,
+    },
   ];
 
   return (
@@ -66,20 +90,17 @@ export function About() {
               <div
                 key={photo.id}
                 className="relative h-40 md:h-48 bg-brand-100 rounded-xl overflow-hidden 
-                  hover:shadow-lg transition-shadow duration-300 flex items-center justify-center"
+                  hover:shadow-lg transition-shadow duration-300"
               >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Icon
-                    name="интерьер"
-                    size="lg"
-                    alt={photo.title}
-                    className="text-brand-400 opacity-50"
-                  />
-                </div>
-                <p className="relative text-center text-sm font-semibold text-brand-900 bg-brand-50/80 
-                  px-3 py-2 rounded">
-                  {photo.title}
-                </p>
+                <img
+                  src={photo.src}
+                  alt={photo.alt}
+                  width={photo.width}
+                  height={photo.height}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover"
+                />
               </div>
             ))}
           </div>
